@@ -16,6 +16,7 @@ data/blog.db
 data/blog.db-journal
 data/blog.db-wal
 data/blog.db-shm
+data/cws-cache.json
 
 # Media uploads (user-generated media is ignored to prevent repository bloat)
 public/uploads/*

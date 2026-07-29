@@ -1,5 +1,7 @@
 ---
 // src/components/Projects.astro
+import { getChromeExtensionUsers } from '../lib/cws-users.js';
+const userCount = await getChromeExtensionUsers();
 ---
 
 <section id="projects" class="projects-section">
@@ -47,7 +49,7 @@
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
               </svg>
-              <span>24 Users</span>
+              <span id="cws-user-count">{userCount} Users</span>
             </div>
             
             <div class="stat-bubble">
@@ -75,6 +77,21 @@
               <span class="detail-label">The Result:</span>
               <p>Published on the Chrome Web Store with a 5.0 rating and an active, growing user base — designed and built solo, from initial logic to published product.</p>
             </div>
+
+            <!-- Testimonial Quote Card -->
+            <div class="project-testimonial">
+              <div class="testimonial-header">
+                <span class="testimonial-author">M Zain</span>
+                <div class="testimonial-rating">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="star-icon" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="star-icon" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="star-icon" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="star-icon" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="star-icon" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+              </div>
+              <p class="testimonial-quote">"Really useful extension. Makes batch image and video generation super easy and saves a lot of time. The auto upscale and bulk download features work great. Simple, fast, and very helpful for creators. Highly recommended."</p>
+            </div>
           </div>
           
           <!-- External Link CTA -->
@@ -96,18 +113,27 @@
               <span class="browser-dot green"></span>
             </div>
             <div class="browser-content">
-              <!-- This image MUST be placed at: public/images/projects/ronox-flow.png — Astro serves everything inside /public/ from the root URL path automatically -->
-              <img 
-                src="/images/projects/ronox-flow.png" 
-                alt="Ronox Flow extension interface shown on Chrome Web Store" 
-                width="800" 
-                height="500"
-                loading="lazy" 
-              />
+              <a href="https://myheaderimage.b-cdn.net/ronox-flow.png" target="_blank" rel="noopener noreferrer" class="browser-content-link" title="Click to view full size screenshot in new tab">
+                <img 
+                  src="https://myheaderimage.b-cdn.net/ronox-flow.png" 
+                  alt="Ronox Flow extension interface shown on Chrome Web Store" 
+                  width="800" 
+                  height="500"
+                  loading="lazy" 
+                />
+              </a>
             </div>
           </div>
         </div>
         
+      </div>
+    </div>
+
+    <!-- Lightbox Modal Overlay -->
+    <div id="image-lightbox" class="lightbox" aria-hidden="true" role="dialog">
+      <button class="lightbox-close" aria-label="Close image preview">&times;</button>
+      <div class="lightbox-content">
+        <img id="lightbox-img" src="" alt="Project image preview" />
       </div>
     </div>
     
@@ -371,6 +397,43 @@
     line-height: var(--lh-base);
   }
 
+  /* Testimonial Quote Card */
+  .project-testimonial {
+    margin-top: var(--space-4);
+    padding: var(--space-4);
+    background-color: var(--color-bg-surface-hover);
+    border-left: 3px solid var(--color-secondary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  }
+
+  .testimonial-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+
+  .testimonial-author {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .testimonial-rating {
+    display: flex;
+    gap: 2px;
+    color: #eab308; /* Star Gold */
+  }
+
+  .testimonial-quote {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--lh-base);
+    font-style: italic;
+    margin: 0;
+  }
+
   /* Interactive Arrow CTA link */
   .project-link {
     display: inline-flex;
@@ -437,6 +500,13 @@
 
   .browser-content {
     background-color: var(--color-bg-surface);
+    overflow: hidden;
+  }
+
+  .browser-content-link {
+    display: block;
+    cursor: zoom-in;
+    overflow: hidden;
   }
 
   .browser-content img {
@@ -445,6 +515,11 @@
     height: auto;
     object-fit: cover;
     background-color: var(--color-bg-surface-hover);
+    transition: transform var(--transition-base);
+  }
+
+  .browser-content-link:hover img {
+    transform: scale(1.025);
   }
 
   /* --- 4. Secondary Project Grid Cards --- */
@@ -567,16 +642,11 @@
     margin-top: auto; /* Aligns contents neatly to bottom of cards */
   }
 
-  /* --- 5. Scroll Reveal --- */
-  .scroll-reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-  }
-
-  .scroll-reveal.animate {
-    opacity: 1;
-    transform: translateY(0);
+  /* Reduce motions */
+  @media (prefers-reduced-motion: reduce) {
+    .project-link:hover .link-arrow {
+      transform: none !important;
+    }
   }
 
   /* Responsive stacking overrides */
@@ -595,16 +665,76 @@
     }
   }
 
-  /* Reduce motions */
-  @media (prefers-reduced-motion: reduce) {
-    .scroll-reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-    .project-link:hover .link-arrow {
-      transform: none !important;
-    }
+  /* --- 6. Lightbox Overlay --- */
+  .lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: var(--shadow-lg), 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .lightbox.active .lightbox-content {
+    transform: scale(1);
+  }
+
+  .lightbox-content img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 85vh;
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 36px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s;
+    z-index: 1010;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+  }
+
+  .lightbox-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.08);
   }
 </style>
 
@@ -631,9 +761,68 @@
     });
   };
 
+  const setupLightbox = () => {
+    const link = document.querySelector('.browser-content-link');
+    const lightbox = document.getElementById('image-lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const closeBtn = document.querySelector('.lightbox-close');
+
+    if (!link || !lightbox || !lightboxImg || !closeBtn) return;
+
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const imgSrc = link.getAttribute('href');
+      lightboxImg.setAttribute('src', imgSrc);
+      lightbox.classList.add('active');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    });
+
+    const closeLightbox = () => {
+      lightbox.classList.remove('active');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        lightboxImg.setAttribute('src', '');
+      }, 300);
+    };
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target.classList.contains('lightbox-content')) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+        closeLightbox();
+      }
+    });
+  };
+
+  const fetchCwsUsers = async () => {
+    try {
+      const res = await fetch('/api/cws-users');
+      if (res.ok) {
+        const data = await res.json();
+        const countSpan = document.getElementById('cws-user-count');
+        if (countSpan && data.count) {
+          countSpan.textContent = `${data.count} Users`;
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching CWS user count:', err);
+    }
+  };
+
   const init = () => {
     requestAnimationFrame(() => {
-      setTimeout(observeElements, 50);
+      setTimeout(() => {
+        observeElements();
+        setupLightbox();
+        fetchCwsUsers();
+      }, 50);
     });
   };
 

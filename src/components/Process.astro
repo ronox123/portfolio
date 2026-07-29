@@ -306,7 +306,7 @@
     font-family: var(--font-heading);
     font-size: 3.5rem;
     font-weight: var(--weight-extrabold);
-    color: rgba(var(--color-primary-rgb), 0.09); /* 9% opacity navy in light mode */
+    color: rgba(var(--color-primary-rgb), 0.2); /* 20% opacity navy in light mode */
     position: absolute;
     right: 0;
     top: 50%;
@@ -318,12 +318,13 @@
   }
 
   :global([data-theme="dark"]) .step-watermark {
-    color: rgba(var(--color-secondary-rgb), 0.06); /* 6% opacity gold in dark mode */
+    color: rgba(var(--color-secondary-rgb), 0.16); /* 16% opacity gold in dark mode */
   }
 
   .step-card:hover .step-watermark {
-    color: rgba(var(--color-secondary-rgb), 0.18);
-    transform: translateY(-50%) scale(1.05);
+    color: rgba(var(--color-secondary-rgb), 0.38); /* 38% opacity gold on hover */
+    transform: translateY(-50%) scale(1.08);
+    text-shadow: 0 0 15px rgba(var(--color-secondary-rgb), 0.15);
   }
 
   .step-title {

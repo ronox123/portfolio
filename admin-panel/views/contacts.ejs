@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Requests | Portfolio Admin</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    /* Status Badge styling */
+    .status-pill {
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+    }
+    .status-pill.status-new {
+      background-color: var(--danger-bg, #FEE2E2);
+      color: var(--danger-text, #991B1B);
+    }
+    .status-pill.status-read {
+      background-color: #F1F5F9;
+      color: #475569;
+    }
+    .status-pill.status-replied {
+      background-color: var(--success-bg, #D1FAE5);
+      color: var(--success-text, #065F46);
+    }
+    .status-pill.status-archived {
+      background-color: var(--warning-bg, #FEF3C7);
+      color: var(--warning-text, #92400E);
+    }
+
+    /* Modal Overlay styling */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-container {
+      background-color: var(--card-bg, #FFFFFF);
+      border: 1px solid var(--border-color, #E2E8F0);
+      border-radius: var(--radius-lg, 12px);
+      width: 100%;
+      max-width: 600px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal-container {
+      transform: translateY(0);
+    }
+    .modal-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color, #E2E8F0);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main, #1E293B);
+    }
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-muted, #64748B);
+      transition: color 0.2s;
+    }
+    .modal-close-btn:hover {
+      color: var(--text-main, #1E293B);
+    }
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      font-size: 13px;
+    }
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .meta-lbl {
+      color: var(--text-muted, #64748B);
+      font-weight: 500;
+    }
+    .meta-val {
+      color: var(--text-main, #1E293B);
+      font-weight: 600;
+    }
+    .modal-message-box {
+      background-color: var(--bg-color, #F8FAFC);
+      border: 1px solid var(--border-color, #E2E8F0);
+      border-radius: var(--radius-md, 8px);
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-secondary, #475569);
+      white-space: pre-wrap;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color, #E2E8F0);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      background-color: var(--bg-color, #F8FAFC);
+    }
+
+    /* Filters row */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      background-color: var(--card-bg, #FFFFFF);
+      padding: 16px 24px;
+      border: 1px solid var(--border-color, #E2E8F0);
+      border-radius: var(--radius-md, 8px);
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .filter-select {
+      padding: 8px 12px;
+      border-radius: var(--radius-sm, 4px);
+      border: 1px solid var(--border-color, #E2E8F0);
+      font-size: 13px;
+      outline: none;
+      background-color: var(--card-bg, #FFFFFF);
+    }
+    .search-input {
+      padding: 8px 12px;
+      border-radius: var(--radius-sm, 4px);
+      border: 1px solid var(--border-color, #E2E8F0);
+      font-size: 13px;
+      outline: none;
+      width: 240px;
+      background-color: var(--card-bg, #FFFFFF);
+    }
+
+    /* Bulk Action controls */
+    .bulk-bar {
+      background-color: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      padding: 12px 24px;
+      border-radius: var(--radius-md, 8px);
+      margin-bottom: 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      animation: slideDown 0.2s ease-out;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .bulk-actions-group {
+      display: flex;
+      gap: 8px;
+    }
+    .bulk-count {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1E3A8A;
+    }
+
+    .clickable-row {
+      cursor: pointer;
+    }
+    .clickable-row:hover td {
+      background-color: var(--bg-color, #F8FAFC) !important;
+    }
+
+    /* Prevent checkbox from triggering row click modal */
+    .checkbox-col {
+      cursor: default;
+    }
+
+    .sort-header {
+      cursor: pointer;
+      user-select: none;
+    }
+    .sort-header:hover {
+      color: var(--primary-color);
+    }
+    .sort-icon {
+      font-size: 11px;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <%- include('partials/sidebar', { activeTab: 'contacts' }) %>
+
+  <!-- Main Workspace -->
+  <div class="admin-main">
+    <!-- Topbar -->
+    <%- include('partials/topbar') %>
+
+    <!-- Content Space -->
+    <main class="admin-content">
+      
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Contact Requests</h1>
+          <p class="page-subtitle">Manage client inquiries submitted from the website</p>
+        </div>
+      </header>
+
+      <!-- Stat Badges Grid -->
+      <section class="stats-row" style="margin-bottom: 24px;">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-lbl">Total Requests</span>
+            <span class="stat-val"><%= stats.total %></span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-amber">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-lbl">New Unread</span>
+            <span class="stat-val"><%= stats.unread %></span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-lbl">Replied</span>
+            <span class="stat-val"><%= stats.replied %></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search & Filters -->
+      <section class="filter-bar">
+        <form id="filter-form" action="/admin/contacts" method="GET" style="display: flex; flex-wrap: wrap; gap: 16px; width: 100%; justify-content: space-between; align-items: center;">
+          <input type="hidden" name="sort" value="<%= filters.sort %>" id="form-sort-field">
+          <input type="hidden" name="order" value="<%= filters.order %>" id="form-sort-order">
+          <input type="hidden" name="page" value="1" id="form-page">
+          
+          <div class="filter-group">
+            <input type="text" name="search" value="<%= filters.search %>" class="search-input" placeholder="Search name, email, message...">
+            
+            <select name="status" class="filter-select" onchange="this.form.submit()">
+              <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Statuses</option>
+              <option value="new" <%= filters.status === 'new' ? 'selected' : '' %>>New</option>
+              <option value="read" <%= filters.status === 'read' ? 'selected' : '' %>>Read</option>
+              <option value="replied" <%= filters.status === 'replied' ? 'selected' : '' %>>Replied</option>
+              <option value="archived" <%= filters.status === 'archived' ? 'selected' : '' %>>Archived</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <button type="submit" class="btn btn-outline" style="padding: 8px 16px; font-size: 13px;">Apply Filters</button>
+            <a href="/admin/contacts" class="btn btn-outline" style="padding: 8px 16px; font-size: 13px;">Reset</a>
+          </div>
+        </form>
+      </section>
+
+      <!-- Bulk Actions Bar -->
+      <section id="bulk-bar" class="bulk-bar">
+        <div class="bulk-count">
+          <span id="selected-count">0</span> items selected
+        </div>
+        <div class="bulk-actions-group">
+          <button type="button" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="triggerBulkAction('read')">Mark as Read</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="triggerBulkAction('unread')">Mark as Unread</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="triggerBulkAction('replied')">Mark as Replied</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="triggerBulkAction('archive')">Archive</button>
+          <button type="button" class="btn btn-danger-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--danger-color); color: var(--danger-color);" onclick="triggerBulkAction('delete')">Delete Selected</button>
+        </div>
+      </section>
+
+      <!-- Table Card -->
+      <div class="admin-card">
+        <% if (contacts.length === 0) { %>
+          <div style="text-align: center; padding: 64px 32px; color: var(--text-muted);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px; opacity: 0.5;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <p style="font-weight: 600; font-size: 16px;">No contact requests found</p>
+            <p style="font-size: 13px; margin-top: 4px;">Adjust your filters or query to explore other results.</p>
+          </div>
+        <% } else { %>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px;" class="checkbox-col">
+                    <input type="checkbox" id="select-all" style="cursor: pointer;">
+                  </th>
+                  <th class="sort-header" onclick="changeSort('name')">
+                    Full Name <span class="sort-icon"><%= filters.sort === 'name' ? (filters.order === 'ASC' ? '▲' : '▼') : '↕' %></span>
+                  </th>
+                  <th class="sort-header" onclick="changeSort('email')">
+                    Email / Company <span class="sort-icon"><%= filters.sort === 'email' ? (filters.order === 'ASC' ? '▲' : '▼') : '↕' %></span>
+                  </th>
+                  <th class="sort-header" onclick="changeSort('subject')">
+                    Subject & Excerpt <span class="sort-icon"><%= filters.sort === 'subject' ? (filters.order === 'ASC' ? '▲' : '▼') : '↕' %></span>
+                  </th>
+                  <th class="sort-header" onclick="changeSort('status')">
+                    Status <span class="sort-icon"><%= filters.sort === 'status' ? (filters.order === 'ASC' ? '▲' : '▼') : '↕' %></span>
+                  </th>
+                  <th class="sort-header" onclick="changeSort('created_at')">
+                    Submitted <span class="sort-icon"><%= filters.sort === 'created_at' ? (filters.order === 'ASC' ? '▲' : '▼') : '↕' %></span>
+                  </th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% contacts.forEach(contact => { %>
+                  <tr class="clickable-row <%= contact.status === 'new' ? 'unread-row' : '' %>" 
+                      data-id="<%= contact.id %>"
+                      data-name="<%= contact.name %>"
+                      data-email="<%= contact.email %>"
+                      data-company="<%= contact.company || '' %>"
+                      data-subject="<%= contact.subject %>"
+                      data-message="<%= contact.message %>"
+                      data-status="<%= contact.status %>"
+                      data-date="<%= new Date(contact.created_at).toLocaleString() %>"
+                      onclick="openContactModal(this, event)"
+                  >
+                    <td class="checkbox-col" onclick="event.stopPropagation()">
+                      <input type="checkbox" class="contact-checkbox" value="<%= contact.id %>" style="cursor: pointer;">
+                    </td>
+                    <td>
+                      <div class="row-title" style="<%= contact.status === 'new' ? 'font-weight: 700;' : '' %>"><%= contact.name %></div>
+                    </td>
+                    <td>
+                      <div style="font-size: 13px;"><%= contact.email %></div>
+                      <% if (contact.company) { %>
+                        <div style="font-size: 11px; color: var(--text-muted);"><%= contact.company %></div>
+                      <% } %>
+                    </td>
+                    <td>
+                      <div style="font-size: 13px; font-weight: 600;"><%= contact.subject %></div>
+                      <div style="font-size: 12px; color: var(--text-muted); width: 280px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                        <%= contact.message %>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-<%= contact.status %>">
+                        <%= contact.status %>
+                      </span>
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 13px;">
+                      <%= new Date(contact.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                    </td>
+                    <td onclick="event.stopPropagation()">
+                      <form action="/admin/contacts/delete/<%= contact.id %>" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this inquiry?');">
+                        <button type="submit" class="btn btn-danger-outline" style="padding: 4px 8px; font-size: 11px;">
+                          Delete
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination row -->
+          <% if (pagination.totalPages > 1) { %>
+            <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; padding: 12px 24px;">
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="changePage(<%= pagination.page - 1 %>)" <%= pagination.page <= 1 ? 'disabled' : '' %>>Previous</button>
+              <span style="font-size: 13px; color: var(--text-muted);">Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="changePage(<%= pagination.page + 1 %>)" <%= pagination.page >= pagination.totalPages ? 'disabled' : '' %>>Next</button>
+            </div>
+          <% } %>
+        <% } %>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="contact-modal" class="modal-overlay" onclick="closeContactModal(event)">
+    <div class="modal-container" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-header-subject">Project Inquiry</h2>
+        <button class="modal-close-btn" onclick="closeContactModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="modal-meta-grid">
+          <div class="meta-item">
+            <span class="meta-lbl">Sender Name</span>
+            <span class="meta-val" id="modal-name">John Doe</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-lbl">Email Address</span>
+            <span class="meta-val" id="modal-email">john@example.com</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-lbl">Company</span>
+            <span class="meta-val" id="modal-company">Acme Corp</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-lbl">Submitted</span>
+            <span class="meta-val" id="modal-date">July 29, 2026</span>
+          </div>
+        </div>
+
+        <div class="meta-item" style="margin-top: 8px;">
+          <span class="meta-lbl">Message Body</span>
+          <div class="modal-message-box" id="modal-message">
+            Project message content details...
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <span style="margin-right: auto; display: flex; align-items: center; gap: 8px;">
+          <span class="meta-lbl" style="font-size: 12px;">Status:</span>
+          <select id="modal-status-select" class="filter-select" style="padding: 4px 8px; font-size: 12px;">
+            <option value="new">New</option>
+            <option value="read">Read</option>
+            <option value="replied">Replied</option>
+            <option value="archived">Archived</option>
+          </select>
+        </span>
+        <button class="btn btn-outline" style="padding: 6px 16px; font-size: 13px;" onclick="closeContactModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client-side script handling interactions -->
+  <script>
+    // State values
+    let activeModalContactId = null;
+
+    // Sorting handling
+    function changeSort(field) {
+      const currentSort = document.getElementById('form-sort-field').value;
+      const currentOrder = document.getElementById('form-sort-order').value;
+      
+      let newOrder = 'DESC';
+      if (currentSort === field) {
+        newOrder = currentOrder === 'DESC' ? 'ASC' : 'DESC';
+      } else {
+        // default orders for fields
+        newOrder = (field === 'name' || field === 'email') ? 'ASC' : 'DESC';
+      }
+
+      document.getElementById('form-sort-field').value = field;
+      document.getElementById('form-sort-order').value = newOrder;
+      document.getElementById('filter-form').submit();
+    }
+
+    // Pagination handling
+    function changePage(page) {
+      document.getElementById('form-page').value = page;
+      document.getElementById('filter-form').submit();
+    }
+
+    // Modal workflow
+    function openContactModal(row, event) {
+      const id = row.getAttribute('data-id');
+      const name = row.getAttribute('data-name');
+      const email = row.getAttribute('data-email');
+      const company = row.getAttribute('data-company');
+      const subject = row.getAttribute('data-subject');
+      const message = row.getAttribute('data-message');
+      const status = row.getAttribute('data-status');
+      const date = row.getAttribute('data-date');
+
+      activeModalContactId = id;
+
+      document.getElementById('modal-header-subject').textContent = subject;
+      document.getElementById('modal-name').textContent = name;
+      document.getElementById('modal-email').textContent = email;
+      document.getElementById('modal-company').textContent = company || 'N/A';
+      document.getElementById('modal-date').textContent = date;
+      document.getElementById('modal-message').textContent = message;
+      document.getElementById('modal-status-select').value = status;
+
+      // Open Modal
+      const modal = document.getElementById('contact-modal');
+      modal.classList.add('active');
+
+      // If status was 'new', mark it as 'read' automatically
+      if (status === 'new') {
+        updateContactStatus(id, 'read', false);
+      }
+    }
+
+    function closeContactModal(event) {
+      if (!event || event.target === document.getElementById('contact-modal') || event.target.classList.contains('modal-close-btn') || event.target.tagName === 'BUTTON') {
+        document.getElementById('contact-modal').classList.remove('active');
+        activeModalContactId = null;
+      }
+    }
+
+    // Update Status API call
+    async function updateContactStatus(id, newStatus, reloadOnSuccess = true) {
+      try {
+        const response = await fetch('/admin/contacts/update-status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id, status: newStatus })
+        });
+        if (response.ok && reloadOnSuccess) {
+          window.location.reload();
+        }
+      } catch (err) {
+        console.error('Failed to update status:', err);
+      }
+    }
+
+    // Modal status dropdown listener
+    document.getElementById('modal-status-select').addEventListener('change', function() {
+      if (activeModalContactId) {
+        updateContactStatus(activeModalContactId, this.value);
+      }
+    });
+
+    // Checkbox selections for Bulk actions
+    const selectAllCheckbox = document.getElementById('select-all');
+    const contactCheckboxes = document.querySelectorAll('.contact-checkbox');
+    const bulkBar = document.getElementById('bulk-bar');
+    const selectedCount = document.getElementById('selected-count');
+
+    function updateBulkBarVisibility() {
+      const selected = Array.from(contactCheckboxes).filter(cb => cb.checked);
+      if (selected.length > 0) {
+        bulkBar.style.display = 'flex';
+        selectedCount.textContent = selected.length;
+      } else {
+        bulkBar.style.display = 'none';
+      }
+    }
+
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', function() {
+        contactCheckboxes.forEach(cb => {
+          cb.checked = this.checked;
+        });
+        updateBulkBarVisibility();
+      });
+    }
+
+    contactCheckboxes.forEach(cb => {
+      cb.addEventListener('change', function() {
+        const allChecked = Array.from(contactCheckboxes).every(c => c.checked);
+        if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
+        updateBulkBarVisibility();
+      });
+    });
+
+    // Run bulk action API call
+    async function triggerBulkAction(action) {
+      const selectedIds = Array.from(contactCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => parseInt(cb.value));
+
+      if (selectedIds.length === 0) return;
+
+      if (action === 'delete') {
+        if (!confirm(`Are you sure you want to permanently delete these ${selectedIds.length} selected requests?`)) {
+          return;
+        }
+      }
+
+      try {
+        const response = await fetch('/admin/contacts/bulk', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ ids: selectedIds, action })
+        });
+
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert('Bulk action execution failed.');
+        }
+      } catch (err) {
+        console.error('Failed executing bulk operation:', err);
+        alert('A network error occurred.');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -45,6 +45,22 @@ db.exec(`
 
 console.log('Table "posts" initialized successfully.');
 
+// Create contact requests table
+db.exec(`
+  CREATE TABLE IF NOT EXISTS contact_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    company TEXT,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'new', -- status values: 'new', 'read', 'replied', 'archived'
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+console.log('Table "contact_requests" initialized successfully.');
+
 // Seed a dummy test post
 const seedTitle = 'Sample Post — Delete Me';
 const seedSlug = 'sample-post-delete-me';

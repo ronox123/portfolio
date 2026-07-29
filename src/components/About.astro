@@ -298,17 +298,7 @@
     gap: var(--space-2);
   }
 
-  /* --- 6. Scroll Reveal States --- */
-  .scroll-reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-  }
 
-  .scroll-reveal.animate {
-    opacity: 1;
-    transform: translateY(0);
-  }
 
   /* --- 7. Responsive Mobile Adaptations (Mobile First) --- */
   @media (max-width: 768px) {
@@ -343,14 +333,7 @@
     }
   }
 
-  /* Disable animations if reduced motion is requested */
-  @media (prefers-reduced-motion: reduce) {
-    .scroll-reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-  }
+
 </style>
 
 <!-- Scroll Reveal Script -->

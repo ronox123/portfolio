@@ -31,6 +31,40 @@ if (!fs.existsSync(uploadsDir)) {
 // Database Setup
 const db = new DatabaseSync(dbPath);
 
+// Self-healing database table initialization
+db.exec(`
+  CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    excerpt TEXT,
+    content TEXT,
+    cover_image TEXT,
+    category TEXT,
+    tags TEXT,
+    status TEXT DEFAULT 'draft',
+    published_at TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    meta_title TEXT,
+    meta_description TEXT,
+    read_time INTEGER DEFAULT 1
+  );
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS contact_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    company TEXT,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'new',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -42,6 +76,21 @@ app.use(session({
   saveUninitialized: false,
   cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hours
 }));
+
+// Global EJS Variables Middleware
+app.use((req, res, next) => {
+  if (req.session && req.session.authenticated) {
+    try {
+      const stmt = db.prepare("SELECT COUNT(*) as count FROM contact_requests WHERE status = 'new'");
+      res.locals.unreadContactsCount = stmt.get().count;
+    } catch (err) {
+      res.locals.unreadContactsCount = 0;
+    }
+  } else {
+    res.locals.unreadContactsCount = 0;
+  }
+  next();
+});
 
 // Set EJS Views engine
 app.set('view engine', 'ejs');
@@ -129,7 +178,24 @@ app.get('/dashboard', requireAuth, (req, res) => {
   const published = posts.filter(p => p.status === 'published').length;
   const drafts = total - published;
 
-  res.render('dashboard', { posts, stats: { total, published, drafts } });
+  // Query contact request statistics
+  let unreadContacts = 0;
+  let totalContacts = 0;
+  try {
+    const unreadStmt = db.prepare("SELECT COUNT(*) as count FROM contact_requests WHERE status = 'new'");
+    unreadContacts = unreadStmt.get().count;
+
+    const totalStmt = db.prepare("SELECT COUNT(*) as count FROM contact_requests");
+    totalContacts = totalStmt.get().count;
+  } catch (err) {
+    console.error('Error fetching contact stats for dashboard:', err);
+  }
+
+  res.render('dashboard', { 
+    posts, 
+    stats: { total, published, drafts },
+    contactStats: { unread: unreadContacts, total: totalContacts }
+  });
 });
 
 // New Post Route
@@ -267,6 +333,153 @@ app.get('/posts/preview/:id', requireAuth, (req, res) => {
   }
 
   res.render('preview', { post });
+});
+
+// --- CONTACT REQUESTS MANAGEMENT ROUTES ---
+
+// Listing contacts with sorting, searching, filtering, pagination
+app.get('/admin/contacts', requireAuth, (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+  
+  const status = req.query.status || 'all';
+  const search = req.query.search || '';
+  const sort = req.query.sort || 'created_at';
+  const order = req.query.order || 'DESC';
+
+  // Allowed columns to sort to protect against SQL Injection
+  const allowedSortFields = ['created_at', 'name', 'email', 'company', 'subject', 'status'];
+  const finalSort = allowedSortFields.includes(sort) ? sort : 'created_at';
+  const finalOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
+  let query = 'SELECT * FROM contact_requests';
+  let countQuery = 'SELECT COUNT(*) as count FROM contact_requests';
+  const params = [];
+  const countParams = [];
+  const conditions = [];
+
+  if (status !== 'all') {
+    conditions.push('status = ?');
+    params.push(status);
+    countParams.push(status);
+  }
+
+  if (search) {
+    conditions.push('(name LIKE ? OR email LIKE ? OR company LIKE ? OR subject LIKE ? OR message LIKE ?)');
+    const searchWild = `%${search}%`;
+    params.push(searchWild, searchWild, searchWild, searchWild, searchWild);
+    countParams.push(searchWild, searchWild, searchWild, searchWild, searchWild);
+  }
+
+  if (conditions.length > 0) {
+    query += ' WHERE ' + conditions.join(' AND ');
+    countQuery += ' WHERE ' + conditions.join(' AND ');
+  }
+
+  query += ` ORDER BY ${finalSort} ${finalOrder} LIMIT ? OFFSET ?`;
+  params.push(limit, offset);
+
+  try {
+    const listStmt = db.prepare(query);
+    const contacts = listStmt.all(...params);
+
+    const countStmt = db.prepare(countQuery);
+    const totalCount = countStmt.get(...countParams).count;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Dynamic stats query
+    const statsStmt = db.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new_count,
+        SUM(CASE WHEN status = 'read' THEN 1 ELSE 0 END) as read_count,
+        SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied_count,
+        SUM(CASE WHEN status = 'archived' THEN 1 ELSE 0 END) as archived_count
+      FROM contact_requests
+    `);
+    const contactStats = statsStmt.get() || { total: 0, new_count: 0, read_count: 0, replied_count: 0, archived_count: 0 };
+
+    res.render('contacts', {
+      contacts,
+      activeTab: 'contacts',
+      filters: { status, search, sort, order, page, limit },
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages
+      },
+      stats: {
+        total: contactStats.total || 0,
+        unread: contactStats.new_count || 0,
+        read: contactStats.read_count || 0,
+        replied: contactStats.replied_count || 0,
+        archived: contactStats.archived_count || 0
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching contact list:', err);
+    res.status(500).send('Error loading contact requests');
+  }
+});
+
+// Update single contact status
+app.post('/admin/contacts/update-status', requireAuth, (req, res) => {
+  const { id, status } = req.body;
+  if (!id || !status) {
+    return res.status(400).json({ error: 'Missing parameters' });
+  }
+
+  try {
+    const stmt = db.prepare('UPDATE contact_requests SET status = ? WHERE id = ?');
+    stmt.run(status, id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error updating status:', err);
+    res.status(500).json({ error: 'Database update failed' });
+  }
+});
+
+// Delete single contact request
+app.post('/admin/contacts/delete/:id', requireAuth, (req, res) => {
+  try {
+    const stmt = db.prepare('DELETE FROM contact_requests WHERE id = ?');
+    stmt.run(req.params.id);
+    res.redirect('/admin/contacts');
+  } catch (err) {
+    console.error('Error deleting contact request:', err);
+    res.status(500).send('Database delete failed');
+  }
+});
+
+// Bulk actions on contact requests
+app.post('/admin/contacts/bulk', requireAuth, (req, res) => {
+  const { ids, action } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0 || !action) {
+    return res.status(400).json({ error: 'Invalid parameters' });
+  }
+
+  try {
+    const placeholders = ids.map(() => '?').join(',');
+    
+    if (action === 'delete') {
+      const stmt = db.prepare(`DELETE FROM contact_requests WHERE id IN (${placeholders})`);
+      stmt.run(...ids);
+    } else {
+      let statusValue = 'read';
+      if (action === 'unread') statusValue = 'new';
+      else if (action === 'replied') statusValue = 'replied';
+      else if (action === 'archive') statusValue = 'archived';
+
+      const stmt = db.prepare(`UPDATE contact_requests SET status = ? WHERE id IN (${placeholders})`);
+      stmt.run(statusValue, ...ids);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error executing bulk action:', err);
+    res.status(500).json({ error: 'Bulk action failed' });
+  }
 });
 
 // Root Redirect to Dashboard

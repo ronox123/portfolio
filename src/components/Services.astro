@@ -243,16 +243,11 @@
     color: var(--color-text-primary);
   }
 
-  /* --- 5. Scroll Reveal States --- */
-  .scroll-reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-  }
-
-  .scroll-reveal.animate {
-    opacity: 1;
-    transform: translateY(0);
+  /* Accessibility Overrides */
+  @media (prefers-reduced-motion: reduce) {
+    .card-icon {
+      transform: none !important;
+    }
   }
 
   /* --- 6. Responsive Mobile-First Breakpoints --- */
@@ -273,18 +268,6 @@
   @media (min-width: 1200px) {
     .services-grid {
       grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  /* Accessibility Overrides */
-  @media (prefers-reduced-motion: reduce) {
-    .scroll-reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-    .card-icon {
-      transform: none !important;
     }
   }
 </style>
