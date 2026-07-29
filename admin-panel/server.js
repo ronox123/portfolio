@@ -231,6 +231,9 @@ app.post('/posts/save', requireAuth, upload.single('cover_image'), (req, res) =>
 
   // Determine cover image path
   let coverImagePath = req.body.existing_cover_image || '';
+  if (req.body.cover_image_url && req.body.cover_image_url.trim() !== '') {
+    coverImagePath = req.body.cover_image_url.trim();
+  }
   if (req.file) {
     coverImagePath = '/uploads/' + req.file.filename;
   }

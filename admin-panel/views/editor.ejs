@@ -144,6 +144,13 @@
                   <p>Drag & drop or <strong>click to upload</strong></p>
                   <input type="file" id="cover_image" name="cover_image" class="upload-dropzone-input" accept="image/*">
                 </div>
+
+                <div style="text-align: center; margin: 10px 0; color: var(--color-text-muted); font-size: var(--text-xs); font-weight: 500;">— OR —</div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <input type="text" id="cover_image_url" name="cover_image_url" class="form-input" placeholder="Paste image URL (HTTPS)..." value="<%= post && post.cover_image && !post.cover_image.startsWith('/uploads/') ? post.cover_image : '' %>">
+                </div>
+
                 <div class="dropzone-preview" id="cover-preview-box" <% if (post && post.cover_image) { %> style="display: block;" <% } %> >
                   <img id="cover-preview" src="<%= post && post.cover_image ? post.cover_image : '#' %>" alt="Cover preview">
                 </div>
@@ -588,15 +595,40 @@
       }
     });
 
+    const urlInput = document.getElementById('cover_image_url');
+
     function handleFileSelect(file) {
       if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = (event) => {
           coverPreview.src = event.target.result;
           coverBox.style.display = 'block';
+          if (urlInput) urlInput.value = ''; // Clear URL input when a file is dropped/picked
         };
         reader.readAsDataURL(file);
       }
+    }
+
+    if (urlInput) {
+      urlInput.addEventListener('input', () => {
+        const urlValue = urlInput.value.trim();
+        if (urlValue) {
+          coverPreview.src = urlValue;
+          coverBox.style.display = 'block';
+          coverInput.value = ''; // Clear file input when URL is pasted
+        } else {
+          // Fall back to original cover image if we're editing an existing post
+          const existingCoverInput = document.getElementsByName('existing_cover_image')[0];
+          const origImage = existingCoverInput ? existingCoverInput.value : '';
+          if (origImage) {
+            coverPreview.src = origImage;
+            coverBox.style.display = 'block';
+          } else {
+            coverPreview.src = '#';
+            coverBox.style.display = 'none';
+          }
+        }
+      });
     }
 
     // Category Select Toggles

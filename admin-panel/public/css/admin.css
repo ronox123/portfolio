@@ -492,15 +492,16 @@ a:hover {
   border-radius: var(--radius-md);
   overflow: hidden;
   max-width: 100%;
-  height: 180px;
+  height: 200px;
   border: 1px solid var(--border-color);
   display: none;
+  background-color: #0d121f;
 }
 
 .dropzone-preview img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
