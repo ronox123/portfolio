@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS Dashboard | Portfolio Admin</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+  <!-- Persistent Left Sidebar -->
+  <%- include('partials/sidebar', { activeTab: 'dashboard' }) %>
+
+  <!-- Main Content Space -->
+  <div class="admin-main">
+    
+    <!-- Topbar -->
+    <%- include('partials/topbar') %>
+
+    <!-- Content Area -->
+    <main class="admin-content">
+      
+      <!-- Page Header Title -->
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Overview of your system publications</p>
+        </div>
+        <a href="/posts/new" class="btn btn-solid-navy">
+          <!-- Plus Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          New Post
+        </a>
+      </header>
+
+      <!-- Stat Cards Grid -->
+      <section class="stats-row">
+        <!-- Card 1: Total -->
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-lbl">Total Posts</span>
+            <span class="stat-val"><%= stats.total %></span>
+          </div>
+        </div>
+
+        <!-- Card 2: Published -->
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-lbl">Published</span>
+            <span class="stat-val"><%= stats.published %></span>
+          </div>
+        </div>
+
+        <!-- Card 3: Drafts -->
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-amber">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-lbl">Drafts</span>
+            <span class="stat-val"><%= stats.drafts %></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Table Section -->
+      <div class="admin-card">
+        <div class="admin-card-title">
+          <span>Blog Articles</span>
+          <a href="http://localhost:4321/blog" target="_blank" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">
+            <!-- External Link Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            View Live Blog
+          </a>
+        </div>
+
+        <% if (posts.length === 0) { %>
+          <div style="text-align: center; padding: 48px; color: var(--text-muted);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; color: var(--text-muted); opacity: 0.5;"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <p style="font-weight: 600; font-size: 15px;">No posts published yet</p>
+            <p style="font-size: 13px; margin-top: 4px;">Click the "+ New Post" button to draft your first article.</p>
+          </div>
+        <% } else { %>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Category</th>
+                  <th>Last Updated</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% posts.forEach(post => { %>
+                  <tr>
+                    <td>
+                      <div class="row-title"><%= post.title %></div>
+                      <div class="row-slug">/blog/<%= post.slug %></div>
+                    </td>
+                    <td>
+                      <% if (post.status === 'published') { %>
+                        <span class="status-pill published">Published</span>
+                      <% } else { %>
+                        <span class="status-pill draft">Draft</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <span class="badge" style="background-color: #EFF6FF; color: #1E3A8A; font-weight: 600; padding: 4px 8px; border-radius: var(--radius-sm); font-size: 12px;">
+                        <%= post.category || 'General' %>
+                      </span>
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 13px;">
+                      <%= new Date(post.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                    </td>
+                    <td>
+                      <div class="btn-cell">
+                        <!-- Toggle Publish -->
+                        <form action="/posts/toggle-publish/<%= post.id %>" method="POST" style="display: inline-block;">
+                          <button type="submit" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">
+                            <%= post.status === 'published' ? 'Unpublish' : 'Publish' %>
+                          </button>
+                        </form>
+
+                        <!-- Edit -->
+                        <a href="/posts/edit/<%= post.id %>" class="btn btn-solid-navy" style="padding: 6px 12px; font-size: 12px;">
+                          Edit
+                        </a>
+
+                        <!-- Preview -->
+                        <a href="/posts/preview/<%= post.id %>" target="_blank" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">
+                          Preview
+                        </a>
+
+                        <!-- Delete -->
+                        <form action="/posts/delete/<%= post.id %>" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to permanently delete this post?');">
+                          <button type="submit" class="btn btn-danger-outline" style="padding: 6px 12px; font-size: 12px;">
+                            Delete
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

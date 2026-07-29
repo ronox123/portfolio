@@ -1,0 +1,22 @@
+# Build outputs
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment configurations
+.env
+.env.production
+.env.local
+admin-panel/.env
+
+# Local SQLite databases (state files should not be under source control)
+data/blog.db
+data/blog.db-journal
+data/blog.db-wal
+data/blog.db-shm
+
+# Media uploads (user-generated media is ignored to prevent repository bloat)
+public/uploads/*
+!public/uploads/readme.txt

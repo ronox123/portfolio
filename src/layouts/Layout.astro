@@ -1,0 +1,112 @@
+---
+// src/layouts/Layout.astro
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "Muhammad Ghufran | AI Automation & Systems Builder", 
+  description = "Portfolio of Muhammad Ghufran, a systems builder specializing in AI workflows, n8n automation, faceless YouTube channels, and web tools."
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Meta SEO Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1B2A4A" />
+    
+    <!-- Open Graph / Social Sharing Meta Tags -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <!-- This image must be placed at public/og-image.jpg (1200x630px recommended) -->
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:url" content={Astro.url} />
+    
+    <!-- Favicon -->
+    <!-- Place your custom favicon.ico or favicon.svg monogram inside public/ folder -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Google Fonts Stack -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <!-- Fixed Navigation Header -->
+    <Navbar />
+    
+    <!-- Main content injection point with navbar height top offset padding -->
+    <main class="main-content">
+      <slot />
+    </main>
+    
+    <!-- Site Footer -->
+    <Footer />
+
+    <!-- Back to Top widget -->
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-to-top-icon" aria-hidden="true">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+
+    <!-- Scroll up controller script -->
+    <script>
+      const initBackToTop = () => {
+        const btn = document.getElementById('back-to-top');
+        if (!btn) return;
+
+        const toggleBtnVisibility = () => {
+          if (window.scrollY > 300) {
+            btn.classList.add('show');
+          } else {
+            btn.classList.remove('show');
+          }
+        };
+
+        const scrollToTop = () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        };
+
+        // Bind events
+        window.addEventListener('scroll', toggleBtnVisibility, { passive: true });
+        btn.addEventListener('click', scrollToTop);
+      };
+
+      const init = () => {
+        initBackToTop();
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+      document.addEventListener('astro:after-swap', init);
+    </script>
+  </body>
+</html>
+
+<style>
+  /* Prevents fixed navbar from overlapping top sections */
+  .main-content {
+    padding-top: 72px; /* Matches navbar height defined in Navbar.astro style */
+  }
+</style>

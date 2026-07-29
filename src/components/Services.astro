@@ -1,0 +1,327 @@
+---
+// src/components/Services.astro
+---
+
+<section id="services" class="services-section">
+  <div class="container services-container">
+    
+    <!-- Section Header (staggered delay animations) -->
+    <div class="services-header scroll-reveal">
+      <span class="services-eyebrow">What I Do</span>
+      <h2 class="services-heading">Four pillars. One system.</h2>
+      <p class="services-subtext text-muted">
+        I combine automation, content systems, and code to build things that run on their own.
+      </p>
+    </div>
+    
+    <!-- Cards Grid -->
+    <div class="services-grid">
+      
+      <!-- Card 1: AI Automation -->
+      <div class="service-card scroll-reveal" style="transition-delay: 100ms;">
+        <div class="card-icon-container">
+          <!-- Connected Nodes/Automation Gear Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </div>
+        <h3 class="card-title">AI Automation (n8n)</h3>
+        <p class="card-description">
+          I design and build automation workflows using n8n — connecting APIs, AI models, and databases to eliminate repetitive tasks and engineer workflows that execute without manual friction.
+        </p>
+        <div class="card-tags">
+          <span class="pill compact-pill">Workflow Automation</span>
+          <span class="pill compact-pill">API Integrations</span>
+          <span class="pill compact-pill">AI Pipelines</span>
+        </div>
+      </div>
+      
+      <!-- Card 2: Faceless YouTube Systems -->
+      <div class="service-card scroll-reveal" style="transition-delay: 200ms;">
+        <div class="card-icon-container">
+          <!-- Play Video Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+        </div>
+        <h3 class="card-title">Faceless YouTube Systems</h3>
+        <p class="card-description">
+          I research S-tier niches, build faceless content channels, and set up end-to-end automated pipelines for video generation, asset coordination, monetization, and scaling.
+        </p>
+        <div class="card-tags">
+          <span class="pill compact-pill">Niche Research</span>
+          <span class="pill compact-pill">Channel Automation</span>
+          <span class="pill compact-pill">Monetization Strategy</span>
+        </div>
+      </div>
+      
+      <!-- Card 3: Vibe Coding & Web Tools -->
+      <div class="service-card scroll-reveal" style="transition-delay: 300ms;">
+        <div class="card-icon-container">
+          <!-- Code Brackets Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon" aria-hidden="true">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <h3 class="card-title">Vibe Coding & Web Tools</h3>
+        <p class="card-description">
+          I build responsive landing pages, internal administration hubs, and custom web tools by combining quick vibe coding with no-code infrastructure — fast, lightweight, and operational.
+        </p>
+        <div class="card-tags">
+          <span class="pill compact-pill">Web Development</span>
+          <span class="pill compact-pill">No-Code Tools</span>
+          <span class="pill compact-pill">Custom Builds</span>
+        </div>
+      </div>
+      
+      <!-- Card 4: Content & Stock Media -->
+      <div class="service-card scroll-reveal" style="transition-delay: 400ms;">
+        <div class="card-icon-container">
+          <!-- Stack Image Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+        </div>
+        <h3 class="card-title">Content & Stock Media</h3>
+        <p class="card-description">
+          I create and distribute high-demand visual content through platforms like Adobe Stock — building diverse passive media portfolios to complement my online system operations.
+        </p>
+        <div class="card-tags">
+          <span class="pill compact-pill">Adobe Stock</span>
+          <span class="pill compact-pill">Visual Content</span>
+          <span class="pill compact-pill">Passive Streams</span>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- 1. Section & Background Layout --- */
+  .services-section {
+    position: relative;
+    padding: var(--space-20) 0;
+    overflow: hidden;
+    background: radial-gradient(circle at 10% 75%, rgba(var(--color-primary-rgb), 0.04) 0%, transparent 45%);
+  }
+
+  :global([data-theme="dark"]) .services-section {
+    background: radial-gradient(circle at 10% 75%, rgba(var(--color-secondary-rgb), 0.03) 0%, transparent 45%);
+  }
+
+  .services-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  /* --- 2. Section Header --- */
+  .services-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .services-eyebrow {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-2);
+  }
+
+  .services-heading {
+    font-size: var(--text-2xl);
+    color: var(--color-heading);
+    margin-bottom: var(--space-3);
+  }
+
+  .services-subtext {
+    font-size: var(--text-base);
+    max-width: 65ch;
+  }
+
+  /* --- 3. Grid Columns --- */
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  /* --- 4. Cards Structure & Interactive Mechanics --- */
+  .service-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), 
+                box-shadow var(--transition-base), 
+                border-color var(--transition-base),
+                background-color var(--transition-base);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-secondary); /* shifts to gold on hover */
+    box-shadow: var(--shadow-glow), var(--shadow-md);
+  }
+
+  /* Circular Badge for Card Icon */
+  .card-icon-container {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-base);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-6);
+    transition: background-color var(--transition-base), border-color var(--transition-base);
+  }
+
+  .card-icon {
+    color: var(--color-secondary);
+    transition: transform var(--transition-base);
+  }
+
+  .service-card:hover .card-icon-container {
+    border-color: var(--color-secondary);
+  }
+
+  .service-card:hover .card-icon {
+    transform: scale(1.08);
+  }
+
+  .card-title {
+    font-size: var(--text-md);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    font-weight: var(--weight-bold);
+  }
+
+  .card-description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--lh-base);
+    margin-bottom: var(--space-6);
+  }
+
+  /* Tags Row mapping to bottom */
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: auto; /* Pushes badges to equal height bottom bounds */
+  }
+
+  /* Compact variation of global badge pills */
+  .compact-pill {
+    font-size: 0.7rem;
+    padding: var(--space-1) var(--space-2);
+    background-color: var(--color-bg-base);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    font-weight: var(--weight-medium);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .service-card:hover .compact-pill {
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+  }
+
+  /* --- 5. Scroll Reveal States --- */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  }
+
+  .scroll-reveal.animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* --- 6. Responsive Mobile-First Breakpoints --- */
+  @media (max-width: 768px) {
+    .services-header {
+      align-items: center;
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .services-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .services-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Accessibility Overrides */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .card-icon {
+      transform: none !important;
+    }
+  }
+</style>
+
+<!-- Scroll Reveal Script -->
+<script>
+  const observeElements = () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    );
+
+    document.querySelectorAll('.scroll-reveal').forEach((el) => {
+      observer.observe(el);
+    });
+  };
+
+  const init = () => {
+    requestAnimationFrame(() => {
+      setTimeout(observeElements, 50);
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:after-swap', init);
+</script>

@@ -1,0 +1,387 @@
+---
+// src/components/Achievements.astro
+---
+
+<section id="achievements" class="achievements-section">
+  <!-- Subtle background grid pattern -->
+  <div class="bg-grid-overlay" aria-hidden="true"></div>
+
+  <div class="container achievements-container">
+    
+    <!-- Section Header -->
+    <div class="achievements-header scroll-reveal">
+      <span class="achievements-eyebrow">Milestones</span>
+      <h2 class="achievements-heading">The journey so far.</h2>
+      <p class="achievements-subtext text-muted">
+        A timeline of shipping products, automating content channels, and system building.
+      </p>
+    </div>
+    
+    <!-- Timeline Wrapper -->
+    <div class="timeline-wrapper scroll-reveal-timeline">
+      <!-- Main Vertical Timeline Line -->
+      <div class="timeline-line" aria-hidden="true"></div>
+      
+      <ol class="timeline-list" role="list">
+        
+        <!-- Milestone 1: Joining AI Squad -->
+        <li class="timeline-item" style="--timeline-index: 1;">
+          <div class="timeline-marker" aria-hidden="true"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Jan 2025</span>
+            <h3 class="timeline-title">Joined AI Squad & Emergi AI</h3>
+            <p class="timeline-description">
+              Entered the elite automation community. Started working alongside senior engineers, learning prompt mechanics, node-based workflows, and how to spot high-leverage digital assets.
+            </p>
+          </div>
+        </li>
+        
+        <!-- Milestone 2: Starting First Channel -->
+        <li class="timeline-item" style="--timeline-index: 2;">
+          <div class="timeline-marker" aria-hidden="true"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Mar 2025</span>
+            <h3 class="timeline-title">Launched First Faceless YouTube Channel</h3>
+            <p class="timeline-description">
+              Focused on the historical photos niche. Developed a system for content sourcing, script layout, and voice synthesis coordination, testing automation speed against search algorithms.
+            </p>
+          </div>
+        </li>
+        
+        <!-- Milestone 3: Monetization -->
+        <li class="timeline-item" style="--timeline-index: 3;">
+          <div class="timeline-marker" aria-hidden="true"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Jun 2025</span>
+            <h3 class="timeline-title">Monetized First YouTube Channel</h3>
+            <p class="timeline-description">
+              Cleared all monetization thresholds. Created a self-sustaining asset generating passive revenue from YouTube AdSense, proving the viability of content automation systems.
+            </p>
+          </div>
+        </li>
+        
+        <!-- Milestone 4: Scaling Niches -->
+        <li class="timeline-item" style="--timeline-index: 4;">
+          <div class="timeline-marker" aria-hidden="true"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Sep 2025</span>
+            <h3 class="timeline-title">Expanded to 4+ Cash-Flow Channels</h3>
+            <p class="timeline-description">
+              Replicated the workflow across 3-4 additional niches. Standardized operations and built n8n nodes to handle content scheduling and metrics monitoring, increasing production volume.
+            </p>
+          </div>
+        </li>
+        
+        <!-- Milestone 5: Ronox Flow Launch -->
+        <li class="timeline-item" style="--timeline-index: 5;">
+          <div class="timeline-marker" aria-hidden="true"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Feb 2026</span>
+            <h3 class="timeline-title">Launched Ronox Flow Chrome Extension</h3>
+            <p class="timeline-description">
+              Designed and built a batch generation utility extension for Google Flow. Published on the Chrome Web Store, achieving a 5.0-star rating and an active, growing user base.
+            </p>
+          </div>
+        </li>
+        
+        <!-- Milestone 6: Future Goals -->
+        <li class="timeline-item" style="--timeline-index: 6;">
+          <div class="timeline-marker" aria-hidden="true"></div>
+          <div class="timeline-card highlight-card">
+            <span class="timeline-date highlight-date">Present & Beyond</span>
+            <h3 class="timeline-title">Targeting 10+ Channels & Expansion</h3>
+            <p class="timeline-description">
+              Scaling current channels to a unified creation grid, automating tool updates, and aiming for $10K/month metrics before the end of the year while building offline operations.
+            </p>
+          </div>
+        </li>
+        
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- 1. Section & Background Setup --- */
+  .achievements-section {
+    position: relative;
+    padding: var(--space-20) 0;
+    overflow: hidden;
+    /* Asymmetric lighting gradient */
+    background: radial-gradient(circle at 10% 25%, rgba(var(--color-primary-rgb), 0.05) 0%, transparent 45%);
+  }
+
+  :global([data-theme="dark"]) .achievements-section {
+    background: radial-gradient(circle at 10% 25%, rgba(var(--color-secondary-rgb), 0.03) 0%, transparent 45%);
+  }
+
+  .achievements-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  /* --- 2. Section Header --- */
+  .achievements-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .achievements-eyebrow {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-2);
+  }
+
+  .achievements-heading {
+    font-size: var(--text-2xl);
+    color: var(--color-heading);
+    margin-bottom: var(--space-3);
+  }
+
+  .achievements-subtext {
+    font-size: var(--text-base);
+    max-width: 65ch;
+  }
+
+  /* --- 3. Timeline Layout --- */
+  .timeline-wrapper {
+    position: relative;
+    padding: var(--space-4) 0;
+    margin-left: 20px; /* Indents timeline slightly for visual alignment */
+  }
+
+  /* Connecting vertical line track */
+  .timeline-line {
+    position: absolute;
+    left: 8px; /* Centered inside the 18px marker circles */
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+      180deg, 
+      var(--color-border), 
+      var(--color-border) 6px, 
+      transparent 6px, 
+      transparent 12px
+    );
+    z-index: 0;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .scroll-reveal-timeline.animate .timeline-line {
+    transform: scaleY(1);
+  }
+
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    position: relative;
+    z-index: 1;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: var(--space-8);
+    list-style: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  }
+
+  /* Stagger entrance delays */
+  .scroll-reveal-timeline.animate .timeline-item {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .scroll-reveal-timeline.animate .timeline-item:nth-child(1) { transition-delay: 150ms; }
+  .scroll-reveal-timeline.animate .timeline-item:nth-child(2) { transition-delay: 300ms; }
+  .scroll-reveal-timeline.animate .timeline-item:nth-child(3) { transition-delay: 450ms; }
+  .scroll-reveal-timeline.animate .timeline-item:nth-child(4) { transition-delay: 600ms; }
+  .scroll-reveal-timeline.animate .timeline-item:nth-child(5) { transition-delay: 750ms; }
+  .scroll-reveal-timeline.animate .timeline-item:nth-child(6) { transition-delay: 900ms; }
+
+  /* Timeline Dot Marker */
+  .timeline-marker {
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg-base);
+    border: 3px solid var(--color-border);
+    flex-shrink: 0;
+    z-index: 2;
+    margin-top: 10px; /* Vertically centers dot with the date stamp */
+    transition: border-color var(--transition-base), background-color var(--transition-base);
+  }
+
+  .timeline-item:hover .timeline-marker {
+    border-color: var(--color-secondary);
+    background-color: var(--color-secondary);
+    box-shadow: 0 0 10px rgba(var(--color-secondary-rgb), 0.4);
+  }
+
+  /* Milestone Card Wrapper */
+  .timeline-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    flex-grow: 1;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base), background-color var(--transition-base);
+  }
+
+  .timeline-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-secondary);
+    box-shadow: var(--shadow-glow), var(--shadow-md);
+  }
+
+  /* Specific styling for the current/future highlight card */
+  .highlight-card {
+    border-left: 3px solid var(--color-secondary);
+  }
+
+  .timeline-date {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-bold);
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2);
+  }
+
+  /* Light Theme Contrast Audit Adjustment for Dates */
+  .timeline-date {
+    color: var(--color-primary); /* Navy in light mode for readability */
+  }
+  :global([data-theme="dark"]) .timeline-date {
+    color: var(--color-secondary); /* Gold in dark mode */
+  }
+
+  .timeline-title {
+    font-size: var(--text-md);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+    font-weight: var(--weight-bold);
+  }
+
+  .timeline-description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--lh-base);
+  }
+
+  /* --- 4. Responsive Mobile Adaptations --- */
+  @media (max-width: 768px) {
+    .achievements-section {
+      padding: var(--space-12) 0;
+    }
+
+    .achievements-header {
+      align-items: center;
+      text-align: center;
+    }
+
+    .timeline-wrapper {
+      margin-left: 0;
+    }
+
+    .timeline-item {
+      gap: var(--space-4);
+    }
+
+    .timeline-marker {
+      width: 14px;
+      height: 14px;
+      border-width: 2px;
+      margin-top: 8px;
+    }
+
+    .timeline-line {
+      left: 6px;
+    }
+
+    .timeline-card {
+      padding: var(--space-4);
+    }
+  }
+
+  /* Reduce motions */
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-line {
+      transform: none !important;
+      transition: none;
+    }
+    .timeline-item {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<!-- Scroll Reveal Script -->
+<script>
+  const observeTimeline = () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -100px 0px'
+      }
+    );
+
+    const timeline = document.querySelector('.scroll-reveal-timeline');
+    if (timeline) {
+      observer.observe(timeline);
+    }
+
+    const headerObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+            headerObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+    
+    document.querySelectorAll('.scroll-reveal').forEach((el) => {
+      headerObserver.observe(el);
+    });
+  };
+
+  const init = () => {
+    requestAnimationFrame(() => {
+      setTimeout(observeTimeline, 50);
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:after-swap', init);
+</script>

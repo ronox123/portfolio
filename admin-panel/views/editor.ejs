@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= post ? 'Edit Post' : 'New Post' %> | CMS Admin</title>
+  
+  <!-- Admin panel styles -->
+  <link rel="stylesheet" href="/css/admin.css">
+  
+  <!-- Theme-aware global site stylesheet (disabled by default, enabled dynamically during preview) -->
+  <link rel="stylesheet" id="global-css-link" href="/css/global.css" disabled>
+
+  <!-- Local Typo.js spell-check engine library -->
+  <script src="/js/typo.js"></script>
+</head>
+<body>
+
+  <!-- Persistent Left Sidebar -->
+  <%- include('partials/sidebar', { activeTab: post ? 'posts' : 'new-post' }) %>
+
+  <!-- Main Content Space -->
+  <div class="admin-main">
+    
+    <!-- Topbar -->
+    <%- include('partials/topbar') %>
+
+    <!-- Content Area -->
+    <main class="admin-content">
+      
+      <!-- Page Header -->
+      <header class="page-header">
+        <div>
+          <h1 class="page-title"><%= post ? 'Edit Article' : 'New Article' %></h1>
+          <p class="page-subtitle"><%= post ? `Editing "/blog/${post.slug}"` : 'Write and structure a new publication' %></p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button type="button" class="btn btn-outline" onclick="openLivePreview()">
+            <!-- Eye / Preview Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            Live Preview
+          </button>
+          <a href="/dashboard" class="btn btn-outline">Back to Dashboard</a>
+        </div>
+      </header>
+
+      <!-- Edit Form -->
+      <form id="post-form" action="/posts/save" method="POST" enctype="multipart/form-data">
+        <% if (post) { %>
+          <input type="hidden" name="id" value="<%= post.id %>">
+          <input type="hidden" name="existing_cover_image" value="<%= post.cover_image %>">
+        <% } %>
+        <input type="hidden" name="status" id="post-status" value="draft">
+        <input type="hidden" name="content" id="hidden-content">
+
+        <div class="editor-layout-container">
+          
+          <!-- Column 1: Main Content -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            
+            <div class="admin-card" style="margin-bottom: 0;">
+              <!-- Title -->
+              <div class="form-group">
+                <label for="title" class="form-label">Post Title</label>
+                <input type="text" id="title" name="title" class="form-input" placeholder="e.g. Scaling Youtube Automation via n8n" value="<%= post ? post.title : '' %>" required autocomplete="off">
+              </div>
+
+              <!-- Slug -->
+              <div class="form-group">
+                <label for="slug" class="form-label">Slug (URL Path)</label>
+                <input type="text" id="slug" name="slug" class="form-input" placeholder="e.g. scaling-youtube-automation-via-n8n" value="<%= post ? post.slug : '' %>" required autocomplete="off">
+              </div>
+
+              <!-- TipTap Editor Box -->
+              <div class="form-group">
+                <label class="form-label">Body Content</label>
+                <div class="editor-workspace">
+                  <div class="editor-toolbar">
+                    <button type="button" class="editor-btn" id="btn-bold" title="Bold">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>
+                    </button>
+                    <button type="button" class="editor-btn" id="btn-italic" title="Italic">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>
+                    </button>
+                    
+                    <div class="editor-toolbar-divider"></div>
+                    
+                    <button type="button" class="editor-btn" id="btn-h1" title="Heading 1">H1</button>
+                    <button type="button" class="editor-btn" id="btn-h2" title="Heading 2">H2</button>
+                    <button type="button" class="editor-btn" id="btn-h3" title="Heading 3">H3</button>
+                    
+                    <div class="editor-toolbar-divider"></div>
+
+                    <button type="button" class="editor-btn" id="btn-bullet" title="Bullet List">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    </button>
+                    <button type="button" class="editor-btn" id="btn-ordered" title="Numbered List">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6H2v4h2"></path><path d="M4 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4"></path></svg>
+                    </button>
+                    <button type="button" class="editor-btn" id="btn-quote" title="Blockquote">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    <button type="button" class="editor-btn" id="btn-code" title="Code Block">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    </button>
+                    
+                    <div class="editor-toolbar-divider"></div>
+
+                    <button type="button" class="editor-btn" id="btn-link" title="Insert Link">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    </button>
+                    <button type="button" class="editor-btn" id="btn-image" title="Insert Image">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </button>
+                    <!-- Hidden file picker for inline uploads -->
+                    <input type="file" id="inline-image-input" style="display: none;" accept="image/*">
+                  </div>
+                  <div class="editor-body" id="editor-content"></div>
+                </div>
+              </div>
+
+              <!-- Excerpt -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label for="excerpt" class="form-label" style="margin-bottom: 0;">Excerpt / Summary</label>
+                  <span id="excerpt-count" class="status-pill" style="font-size: 11px; padding: 2px 8px;">0 / 160 recommended</span>
+                </div>
+                <textarea id="excerpt" name="excerpt" class="form-textarea" maxlength="300" placeholder="Write a short summary for social sharing cards..."><%= post ? post.excerpt : '' %></textarea>
+              </div>
+            </div>
+            
+          </div>
+
+          <!-- Column 2: Settings Sidebar -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            
+            <!-- Media Settings -->
+            <div class="admin-card" style="margin-bottom: 0;">
+              <div class="admin-card-title">Media Banner</div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Cover Image</label>
+                <div class="upload-dropzone" id="dropzone">
+                  <span class="upload-dropzone-icon">📁</span>
+                  <p>Drag & drop or <strong>click to upload</strong></p>
+                  <input type="file" id="cover_image" name="cover_image" class="upload-dropzone-input" accept="image/*">
+                </div>
+                <div class="dropzone-preview" id="cover-preview-box" <% if (post && post.cover_image) { %> style="display: block;" <% } %> >
+                  <img id="cover-preview" src="<%= post && post.cover_image ? post.cover_image : '#' %>" alt="Cover preview">
+                </div>
+              </div>
+            </div>
+
+            <!-- Organization Settings -->
+            <div class="admin-card" style="margin-bottom: 0;">
+              <div class="admin-card-title">Organization</div>
+              
+              <!-- Category -->
+              <div class="form-group">
+                <label for="category-select" class="form-label">Category</label>
+                <select id="category-select" class="form-select" onchange="checkCustomCategory(this)">
+                  <% 
+                    const categories = ["AI Automation", "n8n", "YouTube Systems", "Personal"];
+                    const currentCategory = post ? post.category : "AI Automation";
+                    const isCustom = post && post.category && !categories.includes(post.category);
+                  %>
+                  <% categories.forEach(cat => { %>
+                    <option value="<%= cat %>" <%= currentCategory === cat ? 'selected' : '' %>><%= cat %></option>
+                  <% }) %>
+                  <option value="custom" <%= isCustom ? 'selected' : '' %>>Other (Specify...)</option>
+                </select>
+                <input type="text" id="category" name="category" class="form-input custom-category-input" style="<%= isCustom ? 'display: block;' : 'display: none;' %>" placeholder="Type custom category..." value="<%= post ? post.category : 'AI Automation' %>">
+              </div>
+
+              <!-- Tags pills input -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Tags</label>
+                <div class="tags-input-container" id="tags-container">
+                  <input type="text" id="tags-display" class="tags-text-input" placeholder="Type tag and press Enter">
+                </div>
+                <input type="hidden" name="tags" id="tags-hidden" value="<%= post ? post.tags : '' %>">
+              </div>
+            </div>
+
+            <!-- SEO Overrides -->
+            <div class="admin-card" style="margin-bottom: 0;">
+              <button type="button" class="seo-collapsible-btn" onclick="toggleSEOSection()">
+                <span>SEO Settings</span>
+                <span id="seo-arrow">▼</span>
+              </button>
+              <div class="seo-collapsible-content" id="seo-content-box">
+                <div class="form-group">
+                  <label for="meta_title" class="form-label">Meta Title</label>
+                  <input type="text" id="meta_title" name="meta_title" class="form-input" placeholder="Custom page title tag" value="<%= post ? post.meta_title : '' %>">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label for="meta_description" class="form-label">Meta Description</label>
+                  <textarea id="meta_description" name="meta_description" class="form-textarea" placeholder="Custom search snippets description"><%= post ? post.meta_description : '' %></textarea>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Sticky Footer Action Bar -->
+        <footer class="sticky-action-bar">
+          <div>
+            <button type="button" class="btn btn-outline" onclick="openLivePreview()">
+              <!-- Eye Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              Live Preview
+            </button>
+          </div>
+          <div class="sticky-action-bar-right">
+            <button type="button" onclick="submitForm('draft')" class="btn btn-outline">Save as Draft</button>
+            <button type="button" onclick="submitForm('published')" class="btn btn-solid-navy">Publish Post</button>
+          </div>
+        </footer>
+      </form>
+
+    </main>
+  </div>
+
+  <!-- Hidden Container holding database raw HTML content. Prevents string injection JS errors -->
+  <div id="initial-content-holder" style="display: none;"><%- post ? post.content : '' %></div>
+
+  <!-- Spell Check Suggestion Popover -->
+  <div class="spell-popover" id="spell-popover" style="display: none;">
+    <div class="spell-suggestions" id="spell-suggestions"></div>
+    <div class="spell-popover-divider"></div>
+    <button type="button" class="spell-popover-btn ignore-btn" id="spell-ignore-btn">Ignore All</button>
+  </div>
+
+  <!-- Fullscreen Live Preview Modal -->
+  <div class="live-preview-modal" id="live-preview-modal">
+    <div class="live-preview-modal-header">
+      <h4>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-2px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        Live Post Preview
+      </h4>
+      <div style="display: flex; gap: 12px;">
+        <button type="button" class="btn btn-outline btn-ghost-dark" onclick="togglePreviewTheme()">Toggle Light/Dark Theme</button>
+        <button type="button" class="btn btn-solid-navy" style="background-color: var(--danger-color); border-color: var(--danger-color);" onclick="closeLivePreview()">Close Preview</button>
+      </div>
+    </div>
+    <div class="live-preview-modal-body" data-theme="dark">
+      <div class="live-preview-container" id="preview-article-box">
+        <!-- Preview Content Injected Here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TipTap Script Controller (ESM via JSDelivr UMD/ESM modules with strict version locks) -->
+  <script type="module">
+    import { Editor, Extension } from 'https://cdn.jsdelivr.net/npm/@tiptap/core@2.4.0/+esm';
+    import StarterKit from 'https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.4.0/+esm';
+    import Image from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-image@2.4.0/+esm';
+    import Link from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-link@2.4.0/+esm';
+    import { Plugin, PluginKey } from 'https://cdn.jsdelivr.net/npm/@tiptap/pm@2.4.0/state/+esm';
+    import { Decoration, DecorationSet } from 'https://cdn.jsdelivr.net/npm/@tiptap/pm@2.4.0/view/+esm';
+
+    // Safe retrieval of database markup without string breaks
+    const initialContent = document.getElementById('initial-content-holder').innerHTML;
+
+    // Spellcheck Ignore list
+    const ignoredWords = new Set();
+    window.spellIgnoredWords = ignoredWords;
+
+    const SpellCheckPluginKey = new PluginKey('spellcheck');
+
+    const getSpellCheckDecorations = (doc, typo) => {
+      const decorations = [];
+      if (!typo) return DecorationSet.empty;
+
+      doc.descendants((node, pos) => {
+        if (node.isText) {
+          const text = node.text;
+          const wordRegex = /[a-zA-Z']+/g;
+          let match;
+          while ((match = wordRegex.exec(text)) !== null) {
+            const word = match[0];
+            const cleanWord = word.replace(/^'+|'+$/g, '');
+            if (cleanWord.length > 1) {
+              const isIgnored = ignoredWords.has(cleanWord.toLowerCase());
+              if (!isIgnored && !typo.check(cleanWord)) {
+                const start = pos + match.index;
+                const end = start + word.length;
+                decorations.push(
+                  Decoration.inline(start, end, {
+                    class: 'spell-error-word',
+                    'data-spell-word': cleanWord
+                  })
+                );
+              }
+            }
+          }
+        }
+      });
+
+      return DecorationSet.create(doc, decorations);
+    };
+
+    const SpellCheckExtension = Extension.create({
+      name: 'spellcheck',
+      
+      addProseMirrorPlugins() {
+        return [
+          new Plugin({
+            key: SpellCheckPluginKey,
+            state: {
+              init(_, { doc }) {
+                return {
+                  decorations: DecorationSet.empty
+                };
+              },
+              apply(tr, oldState) {
+                if (tr.docChanged || tr.getMeta('ignoredWordAdded') || tr.getMeta('spellcheckRecalculate')) {
+                  return {
+                    decorations: getSpellCheckDecorations(tr.doc, window.typoChecker)
+                  };
+                }
+                return {
+                  decorations: oldState.decorations.map(tr.mapping, tr.doc)
+                };
+              }
+            },
+            props: {
+              decorations(state) {
+                return this.getState(state).decorations;
+              }
+            },
+            view(editorView) {
+              return {
+                update(view, prevState) {
+                  if (view.state.doc.eq(prevState.doc)) return;
+
+                  if (window.spellCheckDebounceTimer) {
+                    clearTimeout(window.spellCheckDebounceTimer);
+                  }
+
+                  window.spellCheckDebounceTimer = setTimeout(() => {
+                    if (!view.isDestroyed) {
+                      view.dispatch(view.state.tr.setMeta('spellcheckRecalculate', true));
+                    }
+                  }, 500); // 500ms debounce!
+                }
+              };
+            }
+          })
+        ];
+      }
+    });
+
+    // Initialize TipTap
+    const editor = new Editor({
+      element: document.querySelector('#editor-content'),
+      extensions: [
+        StarterKit.configure({
+          heading: {
+            levels: [1, 2, 3]
+          }
+        }),
+        Image,
+        Link.configure({
+          openOnClick: false,
+          HTMLAttributes: {
+            class: 'link-underline-effect'
+          }
+        }),
+        SpellCheckExtension
+      ],
+      content: initialContent,
+      onUpdate({ editor }) {
+        // Sync HTML markup to form submission input
+        document.getElementById('hidden-content').value = editor.getHTML();
+      }
+    });
+
+    // Populate hidden field initially
+    document.getElementById('hidden-content').value = editor.getHTML();
+
+    // Editor formatting toolbar bindings
+    document.getElementById('btn-bold').addEventListener('click', () => editor.chain().focus().toggleBold().run());
+    document.getElementById('btn-italic').addEventListener('click', () => editor.chain().focus().toggleItalic().run());
+    document.getElementById('btn-h1').addEventListener('click', () => editor.chain().focus().toggleHeading({ level: 1 }).run());
+    document.getElementById('btn-h2').addEventListener('click', () => editor.chain().focus().toggleHeading({ level: 2 }).run());
+    document.getElementById('btn-h3').addEventListener('click', () => editor.chain().focus().toggleHeading({ level: 3 }).run());
+    document.getElementById('btn-bullet').addEventListener('click', () => editor.chain().focus().toggleBulletList().run());
+    document.getElementById('btn-ordered').addEventListener('click', () => editor.chain().focus().toggleOrderedList().run());
+    document.getElementById('btn-quote').addEventListener('click', () => editor.chain().focus().toggleBlockquote().run());
+    document.getElementById('btn-code').addEventListener('click', () => editor.chain().focus().toggleCodeBlock().run());
+    
+    document.getElementById('btn-link').addEventListener('click', () => {
+      const url = prompt('Enter website link URL:');
+      if (url === '') {
+        editor.chain().focus().unsetLink().run();
+      } else if (url) {
+        editor.chain().focus().setLink({ href: url }).run();
+      }
+    });
+
+    // Inline uploads
+    const inlineInput = document.getElementById('inline-image-input');
+    document.getElementById('btn-image').addEventListener('click', () => inlineInput.click());
+
+    inlineInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        const res = await fetch('/upload-image', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.url) {
+          editor.chain().focus().setImage({ src: data.url, alt: file.name }).run();
+        } else {
+          alert('Inline upload failed.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error uploading inline image.');
+      }
+    });
+
+    // Make editor accessible globally for preview fetching
+    window.tiptapEditor = editor;
+
+    // --- Dynamic Dictionary Load ---
+    async function initSpellchecker() {
+      try {
+        const affRes = await fetch('/dictionaries/en_US/en_US.aff');
+        const affText = await affRes.text();
+        const dicRes = await fetch('/dictionaries/en_US/en_US.dic');
+        const dicText = await dicRes.text();
+
+        window.typoChecker = new Typo('en_US', affText, dicText);
+        console.log('Spellcheck dictionary loaded.');
+
+        // Trigger initial spell check run
+        editor.view.dispatch(editor.state.tr.setMeta('spellcheckRecalculate', true));
+      } catch (err) {
+        console.error('Failed to load spellcheck dictionaries:', err);
+      }
+    }
+
+    initSpellchecker();
+
+    // --- Click Suggestion Popover handlers ---
+    const popover = document.getElementById('spell-popover');
+    const suggestionsBox = document.getElementById('spell-suggestions');
+    const ignoreBtn = document.getElementById('spell-ignore-btn');
+    
+    let activeWord = '';
+    let activeElement = null;
+
+    editor.view.dom.addEventListener('click', (e) => {
+      const target = e.target.closest('.spell-error-word');
+      if (target) {
+        activeElement = target;
+        activeWord = target.innerText;
+        
+        // Show popover
+        const rect = target.getBoundingClientRect();
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+
+        popover.style.display = 'flex';
+        popover.style.top = `${rect.bottom + scrollTop + 6}px`;
+        popover.style.left = `${rect.left + scrollLeft}px`;
+
+        // Render suggestions
+        suggestionsBox.innerHTML = '';
+        const suggestions = window.typoChecker ? window.typoChecker.suggest(activeWord) : [];
+        const topSuggestions = suggestions.slice(0, 3);
+
+        if (topSuggestions.length === 0) {
+          suggestionsBox.innerHTML = '<div class="spell-no-suggestions">No suggestions</div>';
+        } else {
+          topSuggestions.forEach(sug => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'spell-popover-btn suggestion-btn';
+            btn.innerText = sug;
+            btn.addEventListener('click', () => {
+              replaceWord(activeElement, sug);
+              popover.style.display = 'none';
+            });
+            suggestionsBox.appendChild(btn);
+          });
+        }
+      } else {
+        popover.style.display = 'none';
+      }
+    });
+
+    // Close on clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#spell-popover') && !e.target.closest('.spell-error-word')) {
+        popover.style.display = 'none';
+      }
+    });
+
+    // Ignore action
+    ignoreBtn.addEventListener('click', () => {
+      if (activeWord) {
+        ignoredWords.add(activeWord.toLowerCase());
+        popover.style.display = 'none';
+        editor.view.dispatch(editor.state.tr.setMeta('ignoredWordAdded', true));
+      }
+    });
+
+    function replaceWord(element, replacement) {
+      if (!editor || !element) return;
+
+      const word = element.innerText;
+      const from = editor.view.posAtDOM(element, 0);
+      const to = from + word.length;
+
+      editor.chain()
+        .focus()
+        .insertContentAt({ from, to }, replacement)
+        .run();
+    }
+
+  </script>
+
+  <!-- Non-module utilities -->
+  <script>
+    // Slug Auto-generation
+    const titleInput = document.getElementById('title');
+    const slugInput = document.getElementById('slug');
+    let slugEdited = <%= post ? 'true' : 'false' %>;
+
+    titleInput.addEventListener('input', (e) => {
+      if (!slugEdited) {
+        slugInput.value = e.target.value
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+    });
+
+    slugInput.addEventListener('input', () => {
+      slugEdited = true;
+    });
+
+    // Drag and drop cover preview handling
+    const dropzone = document.getElementById('dropzone');
+    const coverInput = document.getElementById('cover_image');
+    const coverPreview = document.getElementById('cover-preview');
+    const coverBox = document.getElementById('cover-preview-box');
+
+    // Trigger input file pick on dropzone click
+    dropzone.addEventListener('click', () => coverInput.click());
+
+    coverInput.addEventListener('change', (e) => {
+      handleFileSelect(e.target.files[0]);
+    });
+
+    // Drag-over styling
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+      }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const file = dt.files[0];
+      if (file) {
+        coverInput.files = dt.files;
+        handleFileSelect(file);
+      }
+    });
+
+    function handleFileSelect(file) {
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          coverPreview.src = event.target.result;
+          coverBox.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Category Select Toggles
+    function checkCustomCategory(select) {
+      const customInput = document.getElementById('category');
+      if (select.value === 'custom') {
+        customInput.style.display = 'block';
+        customInput.value = '';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        customInput.value = select.value;
+      }
+    }
+
+    // Interactive Tag Pills
+    const tagsContainer = document.getElementById('tags-container');
+    const tagsDisplay = document.getElementById('tags-display');
+    const tagsHidden = document.getElementById('tags-hidden');
+    let tagsList = tagsHidden.value ? tagsHidden.value.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+    function renderTags() {
+      // Remove all elements except input box
+      const existingPills = tagsContainer.querySelectorAll('.tag-pill');
+      existingPills.forEach(p => p.remove());
+
+      tagsList.forEach((tag, idx) => {
+        const pill = document.createElement('div');
+        pill.className = 'tag-pill';
+        pill.innerHTML = `
+          <span>${tag}</span>
+          <button type="button" class="tag-pill-remove" onclick="removeTag(${idx})">&times;</button>
+        `;
+        tagsContainer.insertBefore(pill, tagsDisplay);
+      });
+      tagsHidden.value = tagsList.join(',');
+    }
+
+    window.removeTag = function(idx) {
+      tagsList.splice(idx, 1);
+      renderTags();
+    };
+
+    tagsDisplay.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = tagsDisplay.value.trim().replace(/,/g, '');
+        if (val && !tagsList.includes(val)) {
+          tagsList.push(val);
+          renderTags();
+        }
+        tagsDisplay.value = '';
+      }
+    });
+
+    tagsDisplay.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !tagsDisplay.value && tagsList.length > 0) {
+        tagsList.pop();
+        renderTags();
+      }
+    });
+
+    // Initial tags load
+    renderTags();
+
+    // SEO accordion collapsible toggle
+    function toggleSEOSection() {
+      const box = document.getElementById('seo-content-box');
+      const arrow = document.getElementById('seo-arrow');
+      if (box.style.display === 'block') {
+        box.style.display = 'none';
+        arrow.innerText = '▼';
+      } else {
+        box.style.display = 'block';
+        arrow.innerText = '▲';
+      }
+    }
+
+    // Excerpt character counter
+    const excerpt = document.getElementById('excerpt');
+    const count = document.getElementById('excerpt-count');
+    
+    function updateExcerptCount() {
+      const len = excerpt.value.length;
+      count.innerText = `${len} / 160 recommended`;
+      if (len > 160) {
+        count.style.backgroundColor = 'var(--danger-bg)';
+        count.style.color = 'var(--danger-text)';
+      } else {
+        count.style.backgroundColor = 'var(--border-color)';
+        count.style.color = 'var(--text-secondary)';
+      }
+    }
+    excerpt.addEventListener('input', updateExcerptCount);
+    updateExcerptCount();
+
+    // Submit form action
+    function submitForm(status) {
+      document.getElementById('post-status').value = status;
+      
+      const title = titleInput.value.trim();
+      const slug = slugInput.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      slugInput.value = slug;
+
+      if (!title) {
+        alert('Post Title is required.');
+        titleInput.focus();
+        return;
+      }
+
+      document.getElementById('post-form').submit();
+    }
+
+    // --- Live Preview Handlers ---
+    window.openLivePreview = function() {
+      const title = titleInput.value || 'Untitled Post';
+      const category = document.getElementById('category').value || 'General';
+      const content = window.tiptapEditor ? window.tiptapEditor.getHTML() : '<p>No content written yet...</p>';
+      const coverPreview = document.getElementById('cover-preview');
+      const coverBox = document.getElementById('cover-preview-box');
+
+      let coverHtml = '';
+      if (coverBox.style.display === 'block' && coverPreview && coverPreview.src && coverPreview.src !== '#') {
+        coverHtml = `
+          <div class="post-cover">
+            <img src="${coverPreview.src}" alt="Cover Image Banner" />
+          </div>
+        `;
+      }
+
+      // Format date
+      const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+      // Compute read time
+      const plainText = content.replace(/<[^>]*>/g, '');
+      const words = plainText.trim().split(/\s+/).filter(Boolean).length;
+      const readTime = Math.max(1, Math.ceil(words / 200));
+
+      const previewBox = document.getElementById('preview-article-box');
+      previewBox.innerHTML = `
+        <article class="blog-post-wrapper" style="max-width:100%; padding:0;">
+          <div class="post-meta" style="display:flex; align-items:center; gap:12px; font-size:12px; color:var(--color-text-muted); margin-bottom:16px;">
+            <span class="badge" style="background-color: var(--color-secondary); color: var(--color-btn-secondary-text); padding: 4px 10px; border-radius: 999px; font-weight:700;">${category}</span>
+            <span class="meta-dot">•</span>
+            <span class="read-time">${readTime} Min Read</span>
+            <span class="meta-dot">•</span>
+            <span>${today} (Draft Preview)</span>
+          </div>
+          <h1 class="post-title" style="font-size:32px; font-weight:800; color:var(--color-heading); margin-bottom:20px; line-height:1.2;">${title}</h1>
+          ${coverHtml}
+          <div class="post-content-body" style="font-size:16px; line-height:1.6; color:var(--color-text-secondary); margin-top: 24px;">
+            <div class="markdown-content">${content}</div>
+          </div>
+        </article>
+      `;
+
+      // Enable global.css for perfect rendering overrides in preview container
+      document.getElementById('global-css-link').disabled = false;
+      document.getElementById('live-preview-modal').classList.add('is-open');
+    };
+
+    window.closeLivePreview = function() {
+      // Disable global.css to prevent variable bleeding into admin dashboard
+      document.getElementById('global-css-link').disabled = true;
+      document.getElementById('live-preview-modal').classList.remove('is-open');
+    };
+
+    window.togglePreviewTheme = function() {
+      const modalBody = document.querySelector('.live-preview-modal-body');
+      const currentTheme = modalBody.getAttribute('data-theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      modalBody.setAttribute('data-theme', newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme); // update theme selector
+    };
+  </script>
+</body>
+</html>

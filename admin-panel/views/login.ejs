@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Portfolio CMS</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gold accent bar at top of card */
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .login-header {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .login-logo {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary-color);
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .logo-dot {
+      color: var(--accent-color);
+    }
+
+    .login-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .error-box {
+      background-color: var(--danger-bg);
+      border: 1px solid #FCA5A5;
+      color: var(--danger-text);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.15s ease-in-out, transform 0.15s ease-in-out;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <span class="login-logo">Ghufran<span class="logo-dot">.</span></span>
+      <p>Systems Builder Portfolio CMS</p>
+    </div>
+
+    <% if (error) { %>
+      <div class="error-box">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" name="username" class="form-input" required autocomplete="username" placeholder="Enter username">
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 28px;">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" name="password" class="form-input" required autocomplete="current-password" placeholder="Enter password">
+      </div>
+
+      <button type="submit" class="btn-submit">Sign In</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

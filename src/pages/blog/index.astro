@@ -1,0 +1,385 @@
+---
+// src/pages/blog/index.astro
+export const prerender = false; // Opt-out of static rendering (Astro Hybrid SSR)
+
+import Layout from '../../layouts/Layout.astro';
+import { DatabaseSync } from 'node:sqlite';
+import path from 'path';
+
+// Database setup using process.cwd() for absolute path resolution in Astro runtime
+const dbPath = path.join(process.cwd(), 'data', 'blog.db');
+let posts = [];
+
+try {
+  const db = new DatabaseSync(dbPath);
+  const stmt = db.prepare("SELECT * FROM posts WHERE status = 'published' ORDER BY published_at DESC");
+  posts = stmt.all();
+} catch (err) {
+  console.error('Error querying database inside Astro blog index:', err);
+}
+---
+
+<Layout 
+  title="Blog | Muhammad Ghufran" 
+  description="Thoughts on systems, AI automation, n8n, content workflows, and building digital assets."
+>
+  <section class="blog-section">
+    <!-- Visual background patterns -->
+    <div class="bg-grid-overlay" aria-hidden="true"></div>
+
+    <div class="container blog-container">
+      
+      <!-- Section Header -->
+      <div class="blog-header scroll-reveal">
+        <span class="blog-eyebrow">Blog</span>
+        <h1 class="blog-heading">Thoughts on <span class="text-gradient">systems</span>, automation, & building.</h1>
+        <p class="blog-subtext text-muted">
+          Operational blueprints, case updates, and tactical thoughts on building automated assets.
+        </p>
+      </div>
+
+      <!-- Posts Listing -->
+      {posts.length === 0 ? (
+        <div class="blog-empty-state scroll-reveal" style="transition-delay: 150ms;">
+          <div class="empty-icon-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+          </div>
+          <h3>No posts published yet</h3>
+          <p class="text-muted">I'm currently designing new systems. Check back soon for the first article.</p>
+        </div>
+      ) : (
+        <div class="blog-grid">
+          {posts.map((post, index) => {
+            const delay = 100 + (index * 100);
+            const dateStr = post.published_at 
+              ? new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              : '';
+            return (
+              <article class="blog-card scroll-reveal" style={`transition-delay: ${delay}ms;`}>
+                {post.cover_image && (
+                  <a href={`/blog/${post.slug}`} class="card-image-link" aria-label={`Read ${post.title}`}>
+                    <div class="card-image-wrapper">
+                      <img src={post.cover_image} alt={`Cover image for ${post.title}`} loading="lazy" />
+                    </div>
+                  </a>
+                )}
+                <div class="card-content">
+                  <div class="card-meta">
+                    <span class="pill compact-pill">{post.category || 'General'}</span>
+                    <span class="read-time">{post.read_time} Min Read</span>
+                  </div>
+                  
+                  <h2 class="card-title">
+                    <a href={`/blog/${post.slug}`} class="title-link">{post.title}</a>
+                  </h2>
+                  
+                  <p class="card-excerpt">{post.excerpt || 'Read the full post for details.'}</p>
+                  
+                  <div class="card-footer">
+                    <span class="footer-date">{dateStr}</span>
+                    <a href={`/blog/${post.slug}`} class="read-more-link" aria-label={`Read full article: ${post.title}`}>
+                      Read Post
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon" aria-hidden="true">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* --- 1. Section Structure --- */
+  .blog-section {
+    position: relative;
+    padding: var(--space-20) 0;
+    overflow: hidden;
+    background: radial-gradient(circle at 10% 30%, rgba(var(--color-primary-rgb), 0.05) 0%, transparent 50%);
+  }
+
+  :global([data-theme="dark"]) .blog-section {
+    background: radial-gradient(circle at 10% 30%, rgba(var(--color-secondary-rgb), 0.03) 0%, transparent 50%);
+  }
+
+  .blog-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  /* --- 2. Header --- */
+  .blog-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .blog-eyebrow {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-2);
+  }
+
+  .blog-heading {
+    font-size: var(--text-2xl);
+    color: var(--color-heading);
+    margin-bottom: var(--space-3);
+  }
+
+  .blog-subtext {
+    font-size: var(--text-base);
+    max-width: 65ch;
+  }
+
+  /* --- 3. Grid of Cards --- */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 768px) {
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .blog-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+  }
+
+  /* Card Styling (Mimics services/project grids) */
+  .blog-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), 
+                box-shadow var(--transition-base), 
+                border-color var(--transition-base),
+                background-color var(--transition-base);
+  }
+
+  .blog-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-secondary);
+    box-shadow: var(--shadow-glow), var(--shadow-md);
+  }
+
+  /* Card Image */
+  .card-image-link {
+    display: block;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+    aspect-ratio: 16 / 9;
+  }
+
+  .card-image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--color-bg-base);
+  }
+
+  .card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+  }
+
+  .blog-card:hover .card-image-wrapper img {
+    transform: scale(1.05);
+  }
+
+  /* Card Contents */
+  .card-content {
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+  }
+
+  .read-time {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: var(--weight-medium);
+  }
+
+  .card-title {
+    font-size: var(--text-md);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    font-weight: var(--weight-bold);
+    line-height: var(--lh-tight);
+  }
+
+  .title-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .title-link:hover {
+    color: var(--color-secondary);
+  }
+
+  .card-excerpt {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--lh-base);
+    margin-bottom: var(--space-6);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Card Footer */
+  .card-footer {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+  }
+
+  .footer-date {
+    color: var(--color-text-muted);
+  }
+
+  .read-more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-secondary);
+    font-weight: var(--weight-bold);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .read-more-link:hover {
+    color: var(--color-secondary-hover);
+  }
+
+  .arrow-icon {
+    transition: transform var(--transition-fast);
+  }
+
+  .read-more-link:hover .arrow-icon {
+    transform: translateX(3px);
+  }
+
+  /* Empty State */
+  .blog-empty-state {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-12) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .empty-icon-container {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg-base);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-secondary);
+    margin-bottom: var(--space-6);
+  }
+
+  .blog-empty-state h3 {
+    font-size: var(--text-md);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+    font-weight: var(--weight-bold);
+  }
+
+  .blog-empty-state p {
+    font-size: var(--text-sm);
+    max-width: 40ch;
+  }
+
+  /* --- 4. Scroll Reveal --- */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  }
+
+  .scroll-reveal.animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    .blog-header {
+      align-items: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<!-- Scroll Reveal Script -->
+<script>
+  const observeBlog = () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    );
+
+    document.querySelectorAll('.scroll-reveal').forEach((el) => {
+      observer.observe(el);
+    });
+  };
+
+  document.addEventListener('DOMContentLoaded', observeBlog);
+  document.addEventListener('astro:after-swap', observeBlog);
+</script>

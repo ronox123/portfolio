@@ -1,0 +1,41 @@
+---
+// src/pages/index.astro
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Achievements from '../components/Achievements.astro';
+import Services from '../components/Services.astro';
+import TechStack from '../components/TechStack.astro';
+import Projects from '../components/Projects.astro';
+import Process from '../components/Process.astro';
+import Contact from '../components/Contact.astro';
+---
+
+<Layout 
+  title="Muhammad Ghufran | AI Automation & Systems Builder"
+  description="Portfolio of Muhammad Ghufran, an 18-year-old systems-builder specializing in n8n workflows, faceless YouTube channels, and custom coding tools."
+>
+  <!-- Hero / Introduction Section -->
+  <Hero />
+
+  <!-- About Me narrative section -->
+  <About />
+
+  <!-- Growth milestones journey vertical timeline -->
+  <Achievements />
+
+  <!-- Services / What I Do section -->
+  <Services />
+
+  <!-- Tools & Tech stack grid -->
+  <TechStack />
+
+  <!-- Featured Projects & Proof of Work section -->
+  <Projects />
+
+  <!-- Process / How I Work section -->
+  <Process />
+
+  <!-- Contact & Get In Touch section -->
+  <Contact />
+</Layout>

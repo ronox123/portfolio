@@ -1,0 +1,865 @@
+/**
+ * ============================================================================
+ * UNIVERSAL BRAND DESIGN SYSTEM (NAVY & GOLD)
+ * ============================================================================
+ * 
+ * HOW TO IMPORT IN ASTRO:
+ * Add the following line in the frontmatter of your main layout file (e.g., Layout.astro):
+ * import '../styles/global.css';
+ *
+ * THEME TOGGLE FUNCTIONALITY:
+ * By default, this file operates in a warm light theme (default).
+ * To toggle themes via JavaScript:
+ *   document.documentElement.setAttribute('data-theme', 'dark' | 'light');
+ * 
+ * ============================================================================
+ */
+
+/* ===== 1. DESIGN TOKENS (CSS VARIABLES) ===== */
+
+:root {
+  /* --- Typography Stack --- */
+  --font-heading: 'Plus Jakarta Sans', 'Sora', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'JetBrains Mono', 'SFMono-Regular', monospace;
+
+  /* --- Fluid Typography Scale (clamp-based) --- */
+  --text-xs: clamp(0.75rem, 0.72rem + 0.1vw, 0.8rem);
+  --text-sm: clamp(0.85rem, 0.8rem + 0.2vw, 0.95rem);
+  --text-base: clamp(1rem, 0.95rem + 0.2vw, 1.1rem);
+  --text-md: clamp(1.15rem, 1.08rem + 0.3vw, 1.3rem);
+  --text-lg: clamp(1.35rem, 1.25rem + 0.4vw, 1.55rem);
+  --text-xl: clamp(1.6rem, 1.45rem + 0.6vw, 1.95rem);
+  --text-2xl: clamp(2rem, 1.8rem + 1vw, 2.6rem);
+  --text-3xl: clamp(2.5rem, 2.1rem + 1.8vw, 3.4rem);
+  --text-hero: clamp(3.2rem, 2.6rem + 2.8vw, 4.8rem);
+  --text-mega: clamp(3.8rem, 3.2rem + 4vw, 5.8rem);
+
+  /* --- Font Weights --- */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* --- Line Heights --- */
+  --lh-none: 1;
+  --lh-tight: 1.2;
+  --lh-snug: 1.35;
+  --lh-base: 1.65;
+  --lh-loose: 1.85;
+
+  /* --- Spacing Scale (4px/8px Base Grid) --- */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem;  /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem;    /* 16px */
+  --space-6: 1.5rem;  /* 24px */
+  --space-8: 2rem;    /* 32px */
+  --space-12: 3rem;   /* 48px */
+  --space-16: 4rem;   /* 64px */
+  --space-20: 5rem;   /* 80px */
+  --space-24: 6rem;   /* 96px */
+
+  /* --- Border Radius Scale (Soft, approachable curves) --- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* --- Easing & Transitions --- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --transition-fast: 150ms var(--ease-out);
+  --transition-base: 300ms var(--ease-out);
+  --transition-slow: 500ms var(--ease-out);
+
+  /* --- Container & Breakpoint Widths --- */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1200px;
+  --container-max: 1440px;
+
+  /* =========================================
+     LIGHT THEME (DEFAULT)
+     Warm, confident, professional.
+     ========================================= */
+  --color-bg-base: #FAF7F2;             /* Warm cream off-white */
+  --color-bg-surface: #F5F0E6;          /* Slightly warmer elevated container */
+  --color-bg-surface-hover: #EDE5D5;    /* Interactive hover surface */
+  --color-bg-elevated: #ECE5D5;         /* Modals, popovers */
+  --color-border: #E5DFD3;              /* Warm soft-gray stroke */
+  --color-border-hover: #D4CBB9;
+
+  --color-text-primary: #1E2638;        /* Deep navy charcoal */
+  --color-text-secondary: #5C6479;      /* Muted warm slate body text */
+  --color-text-muted: #8B93A8;          /* Warm label gray */
+
+  /* Navy Accent Color (Primary) */
+  --color-primary: #1B2A4A;
+  --color-primary-hover: #131F37;
+  --color-primary-rgb: 27, 42, 74;
+
+  /* Golden Mustard Color (Secondary / CTA Accent) */
+  --color-secondary: #D9A441;
+  --color-secondary-hover: #C59132;
+  --color-secondary-rgb: 217, 164, 65;
+
+  /* Highlight/Link Base (Contrasting warm navy-blue) */
+  --color-accent: #2A457A;
+  --color-accent-hover: #1D3158;
+
+  /* Semantic feedback */
+  --color-success: #2E7D32;
+  --color-warning: #D84315;
+  --color-error: #C62828;
+
+  /* Shadows (Tinted with warm navy to match palette) */
+  --shadow-sm: 0 2px 4px rgba(27, 42, 74, 0.04);
+  --shadow-md: 0 8px 16px -4px rgba(27, 42, 74, 0.06), 0 4px 8px -2px rgba(27, 42, 74, 0.03);
+  --shadow-lg: 0 20px 24px -4px rgba(27, 42, 74, 0.1), 0 8px 12px -6px rgba(27, 42, 74, 0.05);
+  --shadow-glow: 0 0 25px rgba(217, 164, 65, 0.35);
+
+  /* Scrollbar styling */
+  --scrollbar-track: #FAF7F2;
+  --scrollbar-thumb: #1B2A4A;
+  --scrollbar-thumb-hover: #D9A441;
+
+  /* Button Brand Colors */
+  --color-btn-primary-bg: #1B2A4A;
+  --color-btn-primary-bg-hover: #131F37;
+  --color-btn-primary-text: #FAF7F2;
+  --color-btn-secondary-bg: #D9A441;
+  --color-btn-secondary-bg-hover: #C59132;
+  --color-btn-secondary-text: #1B2A4A;
+  --color-btn-ghost-border: #1B2A4A;
+  --color-btn-ghost-text: #1B2A4A;
+
+  /* Theme adaptive gradient text mapping */
+  --gradient-text: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+
+  /* IMPORTANT: This token controls ALL heading colors site-wide. Must maintain strong contrast against base backgrounds. Do not set headings to navy/dark tones in dark mode. */
+  --color-heading: #1B2A4A;
+}
+
+/* =========================================
+   DARK THEME OVERRIDES
+   Deep navy / near-black backdrops.
+   ========================================= */
+
+[data-theme="dark"] {
+  --color-bg-base: #0F1626;             /* Deepest rich warm navy */
+  --color-bg-surface: #172035;          /* Warm navy elevated card */
+  --color-bg-surface-hover: #1F2B48;    /* Interactive hover surface */
+  --color-bg-elevated: #23304E;         /* Modals, popovers */
+  --color-border: #233253;              /* Warm dark-gray stroke */
+  --color-border-hover: #334773;
+
+  --color-text-primary: #F4F6FA;        /* Crisp warm-white */
+  --color-text-secondary: #A0AEC0;      /* Muted light slate gray */
+  --color-text-muted: #718096;          /* Muted dark gray */
+
+  /* Dark theme primary colors (shifted slightly for WCAG compliance and glow) */
+  --color-primary: #22345C;
+  --color-primary-hover: #2C4274;
+  --color-primary-rgb: 34, 52, 92;
+
+  --color-secondary: #E8B84B;           /* Warmer, brighter gold for high contrast */
+  --color-secondary-hover: #F0C767;
+  --color-secondary-rgb: 232, 184, 75;
+
+  --color-accent: #E8B84B;
+  --color-accent-hover: #F0C767;
+
+  /* Semantic feedback */
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-error: #F44336;
+
+  /* Shadows (Darkened and adjusted) */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 16px -4px rgba(0, 0, 0, 0.3), 0 4px 8px -2px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 20px 24px -4px rgba(0, 0, 0, 0.4), 0 8px 12px -6px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 25px rgba(232, 184, 75, 0.22);
+
+  /* Scrollbar styling */
+  --scrollbar-track: #0F1626;
+  --scrollbar-thumb: #22345C;
+  --scrollbar-thumb-hover: #E8B84B;
+
+  /* Button Brand Colors */
+  --color-btn-primary-bg: #22345C;
+  --color-btn-primary-bg-hover: #2C4274;
+  --color-btn-primary-text: #F4F6FA;
+  --color-btn-secondary-bg: #E8B84B;
+  --color-btn-secondary-bg-hover: #F0C767;
+  --color-btn-secondary-text: #0F1626;
+  --color-btn-ghost-border: #22345C;
+  --color-btn-ghost-text: #F4F6FA;
+
+  /* In dark mode, a navy-to-gold gradient has weak contrast. 
+     Instead, use a gorgeous Gold-to-White gradient on the dark backdrop. */
+  --gradient-text: linear-gradient(135deg, var(--color-secondary), #F4F6FA);
+
+  /* IMPORTANT: This token controls ALL heading colors site-wide. Must maintain strong contrast against base backgrounds. Do not set headings to navy/dark tones in dark mode. */
+  --color-heading: #F4F6FA;
+}
+
+
+/* ===== 2. MODERN CSS RESET ===== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
+  margin: 0;
+  padding: 0;
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: var(--lh-base);
+  font-family: var(--font-body);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-secondary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+/* Remove animations/transitions for accessibility if user requests it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ===== 3. GLOBAL ELEMENTS & ACCESSIBILITY ===== */
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+  border: 3px solid var(--scrollbar-track);
+  transition: background-color var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox scrollbar support */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* --- Selection Color (Gold Background with Navy Text) --- */
+::selection {
+  background-color: var(--color-secondary);
+  color: var(--color-primary-hover);
+}
+
+/* --- Accessibility Focus Visible --- */
+:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 3px;
+}
+
+
+/* ===== 4. BASE TYPOGRAPHY ===== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-heading);
+  line-height: var(--lh-tight);
+  transition: color var(--transition-base);
+}
+
+h1 {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+h5 {
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+}
+
+h6 {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+p {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  max-width: 72ch;
+  transition: color var(--transition-base);
+}
+
+p + p {
+  margin-top: var(--space-4);
+}
+
+/* Links (Uses gold accent color with smooth transitions) */
+a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  border-bottom: 1px solid transparent;
+}
+
+a:hover {
+  color: var(--color-secondary-hover);
+  border-color: var(--color-secondary-hover);
+}
+
+/* Blockquote */
+blockquote {
+  padding: var(--space-4) var(--space-6);
+  margin: var(--space-6) 0;
+  border-left: 4px solid var(--color-secondary);
+  background: var(--color-bg-surface);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: italic;
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* Code Blocks */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background-color: var(--color-bg-surface);
+  color: var(--color-accent);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  word-break: break-word;
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow-x: auto;
+  margin: var(--space-4) 0;
+  transition: background-color var(--transition-base), border-color var(--transition-base);
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+  color: inherit;
+}
+
+
+/* ===== 5. GLOBAL BUTTON SYSTEM ===== */
+
+/* Base Reset & Core Button Style */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base),
+              transform var(--transition-base),
+              box-shadow var(--transition-base);
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Primary Button (Navy background, Gold glow shadow on hover) */
+.btn-primary {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-btn-primary-bg-hover);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+/* Secondary Button (Gold background, Navy text) */
+.btn-secondary {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-btn-secondary-bg-hover);
+  transform: translateY(-1px);
+}
+
+/* Ghost Button (Transparent with Navy/Border, Fills Navy on hover) */
+.btn-ghost {
+  background-color: transparent;
+  border-color: var(--color-btn-ghost-border);
+  color: var(--color-btn-ghost-text);
+}
+
+.btn-ghost:hover {
+  background-color: var(--color-btn-ghost-border);
+  color: var(--color-bg-base); /* Fills with body background color */
+}
+
+
+/* ===== 6. HERO/PHOTO SPECIFIC UTILITIES ===== */
+
+/**
+ * Premium frame style for a professional headshot.
+ * Uses a dynamic gold gradient outline/ring, generous soft drop-shadow,
+ * and elegant rounded corners.
+ */
+.hero-photo-frame {
+  position: relative;
+  display: inline-block;
+  border-radius: var(--radius-xl);
+  padding: var(--space-3); /* Defines thickness of gold outline ring */
+  background: linear-gradient(135deg, var(--color-secondary), rgba(var(--color-secondary-rgb), 0.15));
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+}
+
+.hero-photo-frame:hover {
+  transform: scale(1.02) rotate(0.5deg);
+  box-shadow: var(--shadow-glow), var(--shadow-lg);
+}
+
+.hero-photo-frame img {
+  border-radius: calc(var(--radius-xl) - var(--space-2));
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  background-color: var(--color-bg-surface);
+}
+
+/* Rounded circular photo option */
+.hero-photo-frame.circle {
+  border-radius: var(--radius-full);
+}
+
+.hero-photo-frame.circle img {
+  border-radius: var(--radius-full);
+}
+
+/**
+ * Pill/Badge utility class for tagging domains, technologies, and certifications.
+ * Features a bright gold background with navy text.
+ */
+.badge, .pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border-radius: var(--radius-full);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.1);
+}
+
+.badge:hover, .pill:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* ===== 7. UTILITY CLASSES ===== */
+
+/* --- Layout Utilities --- */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+  max-width: var(--container-xl);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+  }
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+}
+
+/* Responsive Grid helpers */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- Alignment & Text Gradient Effects --- */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-gradient {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+/* --- Spacing Utilities (Curated scale: 1, 2, 3, 4, 6, 8, 12, 16) --- */
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+.mt-12 { margin-top: var(--space-12); }
+.mt-16 { margin-top: var(--space-16); }
+
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mb-8 { margin-bottom: var(--space-8); }
+.mb-12 { margin-bottom: var(--space-12); }
+.mb-16 { margin-bottom: var(--space-16); }
+
+.py-1 { padding-top: var(--space-1); padding-bottom: var(--space-1); }
+.py-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+.py-3 { padding-top: var(--space-3); padding-bottom: var(--space-3); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.py-6 { padding-top: var(--space-6); padding-bottom: var(--space-6); }
+.py-8 { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+.py-12 { padding-top: var(--space-12); padding-bottom: var(--space-12); }
+.py-16 { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+
+.px-1 { padding-left: var(--space-1); padding-right: var(--space-1); }
+.px-2 { padding-left: var(--space-2); padding-right: var(--space-2); }
+.px-3 { padding-left: var(--space-3); padding-right: var(--space-3); }
+.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+.px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+.px-8 { padding-left: var(--space-8); padding-right: var(--space-8); }
+.px-12 { padding-left: var(--space-12); padding-right: var(--space-12); }
+.px-16 { padding-left: var(--space-16); padding-right: var(--space-16); }
+
+
+/* ===== 8. KEYFRAME MOTIONS / SCROLL TRIGGERS ===== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animations (triggered globally or manually on viewport entry) */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn var(--transition-slow) forwards;
+}
+
+.slide-up {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: slideUp var(--transition-slow) forwards;
+}
+
+/* ===== 9. PREMIUM POLISH UTILITIES ===== */
+
+/* Subtle background grid pattern using theme variables */
+.bg-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(var(--color-primary-rgb), 0.035) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.035) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .bg-grid-overlay {
+  background-image: linear-gradient(rgba(var(--color-secondary-rgb), 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(var(--color-secondary-rgb), 0.02) 1px, transparent 1px);
+}
+
+/* Underline grow link transition from left to right */
+.link-underline-effect {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline-effect::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--color-secondary);
+  transform-origin: bottom left;
+  transition: transform var(--transition-base);
+}
+
+.link-underline-effect:hover::after {
+  transform: scaleX(1);
+}
+
+/* Thin horizontal page scroll progress bar */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background-color: var(--color-secondary);
+  width: 0%;
+  z-index: 1000;
+  pointer-events: none;
+  transition: width 150ms var(--ease-out);
+}
+
+/* Floating Scroll-to-Top circular CTA */
+.back-to-top {
+  position: fixed;
+  bottom: var(--space-8);
+  right: var(--space-8);
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-secondary);
+  color: var(--color-btn-secondary-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: opacity var(--transition-base), 
+              transform var(--transition-base), 
+              background-color var(--transition-base), 
+              color var(--transition-base), 
+              box-shadow var(--transition-base);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
+}
+
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background-color: var(--color-secondary-hover);
+  transform: scale(1.08) translateY(-3px);
+  box-shadow: var(--shadow-glow), var(--shadow-lg);
+}
+
+.back-to-top-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+  transition: transform var(--transition-base);
+}
+
+.back-to-top:hover .back-to-top-icon {
+  transform: translateY(-2px);
+}
+
+/* Mobile repositioning to avoid overlay elements overlap */
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: var(--space-4);
+    right: var(--space-4);
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Enhanced Button micro-interactions */
+.btn {
+  transition: background-color var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base),
+              transform var(--transition-fast),
+              box-shadow var(--transition-fast) !important;
+}
+
+.btn:hover {
+  transform: scale(1.04) translateY(-1px);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-glow), 0 6px 16px rgba(var(--color-secondary-rgb), 0.28) !important;
+}
+
+.btn-secondary:hover {
+  box-shadow: var(--shadow-glow), 0 6px 16px rgba(var(--color-secondary-rgb), 0.18) !important;
+}
+
+/* Global Scroll Reveal Styles */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.scroll-reveal.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+

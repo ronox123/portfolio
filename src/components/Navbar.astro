@@ -1,0 +1,444 @@
+---
+// src/components/Navbar.astro
+const isBlogPage = Astro.url.pathname.startsWith('/blog') || Astro.url.pathname.includes('404');
+const pathPrefix = isBlogPage ? '/' : '';
+---
+
+<header id="navbar-header" class="navbar-header transparent">
+  <!-- Thin horizontal scroll-progress tracker -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <div class="container navbar-container">
+    
+    <!-- Logo -->
+    <a href={`${pathPrefix}#hero`} class="logo" aria-label="Go to top">
+      Ghufran<span class="logo-dot">.</span>
+    </a>
+    
+    <!-- Desktop Navigation Links (with underline hover effect) -->
+    <nav class="nav-desktop" aria-label="Desktop navigation">
+      <ul class="nav-links">
+        <li><a href={`${pathPrefix}#about`} class="nav-link link-underline-effect">About</a></li>
+        <li><a href={`${pathPrefix}#achievements`} class="nav-link link-underline-effect">Journey</a></li>
+        <li><a href={`${pathPrefix}#services`} class="nav-link link-underline-effect">Services</a></li>
+        <li><a href={`${pathPrefix}#projects`} class="nav-link link-underline-effect">Projects</a></li>
+        <li><a href={`${pathPrefix}#process`} class="nav-link link-underline-effect">Process</a></li>
+        <li><a href="/blog" class="nav-link link-underline-effect">Blog</a></li>
+        <li><a href={`${pathPrefix}#contact`} class="nav-link link-underline-effect">Contact</a></li>
+      </ul>
+    </nav>
+    
+    <!-- Utilities (Theme Toggle + Hamburger) -->
+    <div class="nav-utilities">
+      
+      <!-- Dark/Light Theme Toggle Button -->
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark/light theme">
+        <!-- Sun Icon (shown in dark mode) -->
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+        <!-- Moon Icon (shown in light mode) -->
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+      </button>
+      
+      <!-- Mobile Hamburger Toggle -->
+      <button id="mobile-toggle" class="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-mobile">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+    </div>
+    
+  </div>
+
+  <!-- Mobile Dropdown Navigation Menu -->
+  <nav id="nav-mobile" class="nav-mobile-menu" aria-label="Mobile navigation" style="display: none;">
+    <ul class="mobile-nav-links">
+      <li><a href={`${pathPrefix}#about`} class="mobile-nav-link">About</a></li>
+      <li><a href={`${pathPrefix}#achievements`} class="mobile-nav-link">Journey</a></li>
+      <li><a href={`${pathPrefix}#services`} class="mobile-nav-link">Services</a></li>
+      <li><a href={`${pathPrefix}#projects`} class="mobile-nav-link">Projects</a></li>
+      <li><a href={`${pathPrefix}#process`} class="mobile-nav-link">Process</a></li>
+      <li><a href="/blog" class="mobile-nav-link">Blog</a></li>
+      <li><a href={`${pathPrefix}#contact`} class="mobile-nav-link">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  /* --- 1. Header Navigation Wrapper & Transitions --- */
+  .navbar-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--transition-base), 
+                border-color var(--transition-base), 
+                box-shadow var(--transition-base);
+  }
+
+  /* Solid backdrop state activated via scroll logic JS */
+  .navbar-header.scrolled {
+    background-color: rgba(250, 247, 242, 0.88); /* Cream layer with opacity */
+    border-bottom-color: var(--color-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Dark mode overrides for navbar scrolls */
+  :global([data-theme="dark"]) .navbar-header.scrolled {
+    background-color: rgba(15, 22, 38, 0.88); /* Deep navy base with opacity */
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  }
+
+  .navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 72px;
+  }
+
+  /* Logo branding */
+  .logo {
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+    font-weight: var(--weight-extrabold);
+    color: var(--color-heading);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    border-bottom: none;
+    transition: color var(--transition-base);
+  }
+
+  .logo-dot {
+    color: var(--color-secondary);
+  }
+
+  /* --- 2. Desktop Navigation Links --- */
+  .nav-desktop {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .nav-link {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    padding: var(--space-1) 0;
+    transition: color var(--transition-fast);
+  }
+
+  /* Active highlighting style for desktop */
+  .nav-link.active {
+    color: var(--color-secondary) !important;
+  }
+  
+  .nav-link.active::after {
+    transform: scaleX(1) !important;
+  }
+
+  /* --- 3. Utilities Bar (Theme Toggle + Ham) --- */
+  .nav-utilities {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  /* Theme button toggle style */
+  .theme-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .theme-btn:hover {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+  }
+
+  /* Toggle Icon Display states */
+  .sun-icon { display: none; }
+  .moon-icon { display: block; }
+
+  :global([data-theme="dark"]) .sun-icon { display: block; }
+  :global([data-theme="dark"]) .moon-icon { display: none; }
+
+  /* Mobile hamburger button */
+  .hamburger-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    transition: border-color var(--transition-fast);
+  }
+
+  .hamburger-btn:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .hamburger-line {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    border-radius: var(--radius-full);
+    transition: transform var(--transition-base), opacity var(--transition-base);
+  }
+
+  /* Hamburger toggle animation class */
+  .hamburger-btn.is-active .hamburger-line:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .hamburger-btn.is-active .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger-btn.is-active .hamburger-line:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  /* --- 4. Mobile Menu Dropdown --- */
+  .nav-mobile-menu {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-bg-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-6) var(--space-4);
+    box-shadow: var(--shadow-md);
+    animation: slideDownMenu 0.3s var(--ease-out) forwards;
+  }
+
+  @keyframes slideDownMenu {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    text-align: center;
+  }
+
+  .mobile-nav-link {
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    display: block;
+    padding: var(--space-2) 0;
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  /* Active highlighting style for mobile */
+  .mobile-nav-link.active {
+    color: var(--color-secondary) !important;
+    background-color: var(--color-bg-surface-hover) !important;
+  }
+
+  .mobile-nav-link:hover {
+    background-color: var(--color-bg-surface-hover);
+    color: var(--color-secondary);
+  }
+
+  /* --- 5. Media Queries for Responsive Nav --- */
+  @media (min-width: 768px) {
+    .nav-desktop {
+      display: block;
+    }
+    .hamburger-btn {
+      display: none;
+    }
+    .nav-mobile-menu {
+      display: none !important;
+    }
+  }
+</style>
+
+<!-- Navbar Client Controller Script -->
+<script>
+  const initNavbarControllers = () => {
+    const navbar = document.getElementById('navbar-header');
+    const scrollBar = document.getElementById('scroll-progress');
+
+    // 1. Scroll-based backdrop and progress bar handling
+    const handleScrollEffects = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      
+      // Backdrop Solid transition
+      if (scrollY > 50) {
+        navbar?.classList.add('scrolled');
+      } else {
+        navbar?.classList.remove('scrolled');
+      }
+
+      // Scroll Progress track width calc
+      if (scrollBar && docHeight > 0) {
+        const progress = (scrollY / docHeight) * 100;
+        scrollBar.style.width = `${progress}%`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollEffects, { passive: true });
+    handleScrollEffects(); // Trigger once on initialization
+
+    // 2. Active Section Highlighter (IntersectionObserver)
+    const activeObserver = () => {
+      const desktopLinks = document.querySelectorAll('.nav-desktop .nav-link');
+      const mobileLinks = document.querySelectorAll('.nav-mobile-menu .mobile-nav-link');
+
+      // If route is blog-related, highlight the Blog menu link and exit
+      if (window.location.pathname.startsWith('/blog')) {
+        desktopLinks.forEach(link => {
+          if (link.getAttribute('href') === '/blog') {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+        mobileLinks.forEach(link => {
+          if (link.getAttribute('href') === '/blog') {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+        return;
+      }
+
+      const sections = document.querySelectorAll('section[id]');
+      const observerOptions = {
+        root: null,
+        rootMargin: '-30% 0px -60% 0px', // Triggers when section occupies middle screen bounds
+        threshold: 0
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const currentId = entry.target.getAttribute('id');
+            
+            // Highlight Desktop link
+            desktopLinks.forEach(link => {
+              const href = link.getAttribute('href');
+              if (href && href.endsWith('#' + currentId)) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+
+            // Highlight Mobile link
+            mobileLinks.forEach(link => {
+              const href = link.getAttribute('href');
+              if (href && href.endsWith('#' + currentId)) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        });
+      }, observerOptions);
+
+      sections.forEach(sec => observer.observe(sec));
+    };
+
+    // Run active tracking
+    activeObserver();
+
+    // 3. Theme Controller Setup
+    const getTheme = () => {
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+        return localStorage.getItem('theme');
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const setTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    };
+
+    // Apply starting theme
+    setTheme(getTheme());
+
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      const nextToggle = themeToggle.cloneNode(true);
+      themeToggle.parentNode?.replaceChild(nextToggle, themeToggle);
+      
+      nextToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(nextTheme);
+      });
+    }
+
+    // 4. Mobile Menu Toggle Setup
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const mobileMenu = document.getElementById('nav-mobile');
+
+    if (mobileToggle && mobileMenu) {
+      mobileToggle.addEventListener('click', () => {
+        const isActive = mobileToggle.classList.toggle('is-active');
+        mobileToggle.setAttribute('aria-expanded', String(isActive));
+        mobileMenu.style.display = isActive ? 'block' : 'none';
+      });
+
+      mobileMenu.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileToggle.classList.remove('is-active');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          mobileMenu.style.display = 'none';
+        });
+      });
+    }
+  };
+
+  const init = () => {
+    initNavbarControllers();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:after-swap', init);
+</script>

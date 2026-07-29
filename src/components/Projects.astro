@@ -1,0 +1,646 @@
+---
+// src/components/Projects.astro
+---
+
+<section id="projects" class="projects-section">
+  <div class="container projects-container">
+    
+    <!-- Section Header -->
+    <div class="projects-header scroll-reveal">
+      <span class="projects-eyebrow">Featured Work</span>
+      <h2 class="projects-heading">Things I've actually built.</h2>
+      <p class="projects-subtext text-muted">
+        A few systems and products I've shipped — not just concepts.
+      </p>
+    </div>
+    
+    <!-- Flagship Featured Project Card (Full width on desktop) -->
+    <div class="project-featured-card scroll-reveal" style="transition-delay: 100ms;">
+      <div class="featured-grid">
+        
+        <!-- Left: Project Narrative -->
+        <div class="featured-content">
+          <span class="badge featured-badge">Founder & Creator</span>
+          
+          <h3 class="featured-title">Ronox Flow — Batch Image & Video Extension for Google Flow</h3>
+          
+          <!-- Category tags -->
+          <div class="project-tags">
+            <span class="pill compact-pill">Chrome Extension</span>
+            <span class="pill compact-pill">Art & Design</span>
+            <span class="pill compact-pill">Product Development</span>
+          </div>
+          
+          <!-- Stats row -->
+          <div class="stats-row">
+            <div class="stat-bubble">
+              <!-- Star icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" class="stat-icon-gold" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span>5.0 Rating</span>
+            </div>
+            
+            <div class="stat-bubble">
+              <!-- User icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon-navy" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+              </svg>
+              <span>24 Users</span>
+            </div>
+            
+            <div class="stat-bubble">
+              <!-- Check/Store icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="stat-icon-navy" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Chrome Web Store</span>
+            </div>
+          </div>
+          
+          <div class="case-study-details">
+            <div class="detail-block">
+              <span class="detail-label">The Problem:</span>
+              <p>Google Flow users had no way to batch-generate or process multiple images and videos efficiently — every action was manual, repetitive, and one-at-a-time.</p>
+            </div>
+            
+            <div class="detail-block">
+              <span class="detail-label">What I Built:</span>
+              <p>I designed and built Ronox Flow, a Chrome extension that adds batch image and video generation capabilities directly into Google Flow. It allows users to queue prompts, control generation speed, choose models, set aspect ratios, and manage outputs directly within the native interface.</p>
+            </div>
+            
+            <div class="detail-block">
+              <span class="detail-label">The Result:</span>
+              <p>Published on the Chrome Web Store with a 5.0 rating and an active, growing user base — designed and built solo, from initial logic to published product.</p>
+            </div>
+          </div>
+          
+          <!-- External Link CTA -->
+          <a href="https://chromewebstore.google.com/detail/ronox-flow-%E2%80%94-batch-image/ffhlnhemdffmmhpaaaidgfnclcjdjoob" target="_blank" rel="noopener noreferrer" class="project-link link-underline-effect" aria-label="View Ronox Flow on Chrome Web Store (opens in a new tab)">
+            View on Chrome Web Store
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="link-arrow" aria-hidden="true">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </a>
+        </div>
+        
+        <!-- Right: Premium CSS Browser Mockup -->
+        <div class="featured-mockup">
+          <div class="browser-mockup">
+            <div class="browser-header">
+              <span class="browser-dot red"></span>
+              <span class="browser-dot yellow"></span>
+              <span class="browser-dot green"></span>
+            </div>
+            <div class="browser-content">
+              <!-- This image MUST be placed at: public/images/projects/ronox-flow.png — Astro serves everything inside /public/ from the root URL path automatically -->
+              <img 
+                src="/images/projects/ronox-flow.png" 
+                alt="Ronox Flow extension interface shown on Chrome Web Store" 
+                width="800" 
+                height="500"
+                loading="lazy" 
+              />
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <!-- Secondary Projects (2-column layout below) -->
+    <div class="projects-secondary-grid">
+      
+      <!-- Card 2: Faceless YouTube Systems -->
+      <div class="project-card scroll-reveal" style="transition-delay: 200ms;">
+        <div class="card-visual-accent">
+          <div class="card-icon-wrapper">
+            <!-- Play Video Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            </svg>
+          </div>
+        </div>
+        
+        <h3 class="card-title">Building & Scaling Monetized Faceless Channels</h3>
+        
+        <div class="project-tags">
+          <span class="pill compact-pill">Faceless YouTube</span>
+          <span class="pill compact-pill">Content Automation</span>
+          <span class="pill compact-pill">Monetization</span>
+        </div>
+        
+        <div class="card-details">
+          <div class="detail-block">
+            <span class="detail-label">The Problem:</span>
+            <p>I wanted to build content revenue streams without appearing on camera, starting from zero audience, brand, or external budget.</p>
+          </div>
+          
+          <div class="detail-block">
+            <span class="detail-label">What I Built:</span>
+            <p>I developed a complete creation pipeline—niche research, script structure, voice generation coordination, and channel setup—starting with a historical photo narration channel and then replicating it across 3-4 other niches.</p>
+          </div>
+          
+          <div class="detail-block">
+            <span class="detail-label">The Result:</span>
+            <p>Successfully monetized multiple channels, creating steady passive asset streams built entirely on structured research and automation systems rather than luck.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card 3: n8n Workflow Automations -->
+      <div class="project-card scroll-reveal" style="transition-delay: 350ms;">
+        <div class="card-visual-accent">
+          <div class="card-icon-wrapper">
+            <!-- Connection Nodes Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon" aria-hidden="true">
+              <line x1="6" y1="3" x2="6" y2="15"></line>
+              <circle cx="18" cy="6" r="3"></circle>
+              <circle cx="6" cy="18" r="3"></circle>
+              <path d="M18 9a9 9 0 0 1-9 9"></path>
+            </svg>
+          </div>
+        </div>
+        
+        <h3 class="card-title">Automating Content & Research Workflows with n8n</h3>
+        
+        <div class="project-tags">
+          <span class="pill compact-pill">n8n</span>
+          <span class="pill compact-pill">Workflow Automation</span>
+          <span class="pill compact-pill">AI Integration</span>
+        </div>
+        
+        <div class="card-details">
+          <div class="detail-block">
+            <span class="detail-label">The Problem:</span>
+            <p>Manual, repetitive tasks in keyword research, script generation, and content formatting were throttling my ability to scale my networks.</p>
+          </div>
+          
+          <div class="detail-block">
+            <span class="detail-label">What I Built:</span>
+            <p>I built custom n8n workflows that connect research APIs, Google Sheets, and large language models. These workflows automatically scan niches, draft content templates, and format assets.</p>
+          </div>
+          
+          <div class="detail-block">
+            <span class="detail-label">The Result:</span>
+            <p>Reduced manual production workloads significantly, freeing up operational bandwidth to focus on scaling and product expansion rather than typing.</p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- 1. Section & Background Setup --- */
+  .projects-section {
+    position: relative;
+    padding: var(--space-20) 0;
+    overflow: hidden;
+    /* Soft blurred warm backdrop */
+    background: radial-gradient(circle at 10% 80%, rgba(var(--color-secondary-rgb), 0.05) 0%, transparent 45%);
+  }
+
+  .projects-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  /* --- 2. Section Header --- */
+  .projects-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .projects-eyebrow {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-2);
+  }
+
+  .projects-heading {
+    font-size: var(--text-2xl);
+    color: var(--color-heading);
+    margin-bottom: var(--space-3);
+  }
+
+  .projects-subtext {
+    font-size: var(--text-base);
+    max-width: 65ch;
+  }
+
+  /* --- 3. Featured Card (Flagship Layout) --- */
+  .project-featured-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-top: 3px solid var(--color-secondary); /* Highlight border on top */
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), background-color var(--transition-base);
+  }
+
+  .project-featured-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--color-secondary);
+    box-shadow: var(--shadow-glow), var(--shadow-lg);
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .featured-grid {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .featured-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .featured-badge {
+    margin-bottom: var(--space-4);
+  }
+
+  .featured-title {
+    font-size: var(--text-xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    font-weight: var(--weight-bold);
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .compact-pill {
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--color-bg-base);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    font-weight: var(--weight-medium);
+  }
+
+  /* Stats bubble row */
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-4);
+    width: 100%;
+  }
+
+  .stat-bubble {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-base);
+    border: 1px solid var(--color-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+  }
+
+  .stat-icon-gold {
+    color: var(--color-secondary);
+  }
+
+  .stat-icon-navy {
+    color: var(--color-accent);
+  }
+
+  /* Problem, Solution, Result Detail Blocks */
+  .case-study-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    width: 100%;
+  }
+
+  .detail-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detail-label {
+    font-family: var(--font-heading);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-bold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color var(--transition-base);
+  }
+
+  :global([data-theme="dark"]) .detail-label {
+    color: var(--color-secondary);
+  }
+
+  .detail-block p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--lh-base);
+  }
+
+  /* Interactive Arrow CTA link */
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-secondary);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    transition: color var(--transition-fast);
+    border-bottom: 1px solid transparent;
+  }
+
+  .project-link:hover {
+    color: var(--color-secondary-hover);
+    border-color: var(--color-secondary-hover);
+  }
+
+  .link-arrow {
+    transition: transform var(--transition-fast);
+  }
+
+  .project-link:hover .link-arrow {
+    transform: translate(2px, -2px);
+  }
+
+  /* Browser CSS Mockup Wrapper */
+  .featured-mockup {
+    width: 100%;
+  }
+
+  .browser-mockup {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-base);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: border-color var(--transition-base);
+  }
+
+  .project-featured-card:hover .browser-mockup {
+    border-color: var(--color-border-hover);
+  }
+
+  .browser-header {
+    height: 32px;
+    background-color: var(--color-bg-surface-hover);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    gap: 6px;
+  }
+
+  .browser-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+  }
+
+  .browser-dot.red { background-color: #ef4444; }
+  .browser-dot.yellow { background-color: #f59e0b; }
+  .browser-dot.green { background-color: #10b981; }
+
+  .browser-content {
+    background-color: var(--color-bg-surface);
+  }
+
+  .browser-content img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    background-color: var(--color-bg-surface-hover);
+  }
+
+  /* --- 4. Secondary Project Grid Cards --- */
+  .projects-secondary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .projects-secondary-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+    }
+  }
+
+  .project-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), 
+                box-shadow var(--transition-base), 
+                border-color var(--transition-base),
+                background-color var(--transition-base);
+  }
+
+  .project-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--color-secondary);
+    box-shadow: var(--shadow-glow), var(--shadow-md);
+  }
+
+  .card-icon {
+    color: var(--color-secondary);
+  }
+
+  /* --- 6. Abstract Card Visual Accents --- */
+  .card-visual-accent {
+    width: 100%;
+    height: 120px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1) 0%, rgba(var(--color-secondary-rgb), 0.03) 100%);
+    margin-bottom: var(--space-6);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color var(--transition-base), background-color var(--transition-base);
+  }
+
+  :global([data-theme="dark"]) .card-visual-accent {
+    background: linear-gradient(135deg, rgba(var(--color-secondary-rgb), 0.08) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
+  }
+
+  .card-visual-accent::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.07) 1.5px, transparent 1.5px);
+    background-size: 16px 16px;
+    pointer-events: none;
+  }
+
+  :global([data-theme="dark"]) .card-visual-accent::after {
+    background-image: radial-gradient(circle, rgba(var(--color-secondary-rgb), 0.04) 1.5px, transparent 1.5px);
+  }
+
+  .project-card:hover .card-visual-accent {
+    border-color: var(--color-secondary);
+    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.18) 0%, rgba(var(--color-secondary-rgb), 0.07) 100%);
+  }
+
+  :global([data-theme="dark"]) .project-card:hover .card-visual-accent {
+    background: linear-gradient(135deg, rgba(var(--color-secondary-rgb), 0.14) 0%, rgba(var(--color-primary-rgb), 0.35) 100%);
+  }
+
+  .card-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-base);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .project-card:hover .card-icon-wrapper {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 12px rgba(var(--color-secondary-rgb), 0.15);
+  }
+
+  .card-title {
+    font-size: var(--text-md);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    font-weight: var(--weight-bold);
+    line-height: var(--lh-tight);
+  }
+
+  /* Put spacing in tags at secondary block level */
+  .project-card .project-tags {
+    margin-bottom: var(--space-6);
+  }
+
+  .card-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    margin-top: auto; /* Aligns contents neatly to bottom of cards */
+  }
+
+  /* --- 5. Scroll Reveal --- */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  }
+
+  .scroll-reveal.animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Responsive stacking overrides */
+  @media (max-width: 768px) {
+    .projects-header {
+      align-items: center;
+      text-align: center;
+    }
+    
+    .project-featured-card {
+      padding: var(--space-6);
+    }
+
+    .stats-row {
+      gap: var(--space-2);
+    }
+  }
+
+  /* Reduce motions */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .project-link:hover .link-arrow {
+      transform: none !important;
+    }
+  }
+</style>
+
+<!-- Scroll Reveal Script -->
+<script>
+  const observeElements = () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    );
+
+    document.querySelectorAll('.scroll-reveal').forEach((el) => {
+      observer.observe(el);
+    });
+  };
+
+  const init = () => {
+    requestAnimationFrame(() => {
+      setTimeout(observeElements, 50);
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:after-swap', init);
+</script>

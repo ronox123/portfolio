@@ -1,0 +1,82 @@
+---
+// src/pages/404.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page Not Found | Muhammad Ghufran">
+  <section class="error-section">
+    <!-- Subtle background grid pattern -->
+    <div class="bg-grid-overlay" aria-hidden="true"></div>
+
+    <div class="container error-container">
+      <h1 class="error-code text-gradient">404</h1>
+      <h2 class="error-title">This page doesn't exist.</h2>
+      <p class="error-description text-muted">
+        But my automated systems do. Let's get you back on track to see the real work.
+      </p>
+      
+      <div class="error-action">
+        <a href="/" class="btn btn-primary" aria-label="Go back to the homepage">
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .error-section {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--space-20) 0;
+    background: radial-gradient(circle at 50% 50%, rgba(var(--color-primary-rgb), 0.1) 0%, transparent 60%);
+  }
+
+  :global([data-theme="dark"]) .error-section {
+    background: radial-gradient(circle at 50% 50%, rgba(var(--color-secondary-rgb), 0.04) 0%, transparent 60%);
+  }
+
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .error-code {
+    font-size: clamp(6rem, 15vw, 10rem);
+    font-weight: var(--weight-extrabold);
+    line-height: 1;
+    margin-bottom: var(--space-4);
+  }
+
+  .error-title {
+    font-size: var(--text-2xl);
+    color: var(--color-heading);
+    margin-bottom: var(--space-2);
+    font-weight: var(--weight-bold);
+  }
+
+  .error-description {
+    font-size: var(--text-base);
+    max-width: 50ch;
+    margin-bottom: var(--space-8);
+  }
+
+  .error-action .btn {
+    padding: var(--space-4) var(--space-10);
+    font-size: var(--text-base);
+    box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.35);
+  }
+
+  .error-action .btn:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: var(--shadow-glow), 0 6px 20px rgba(var(--color-secondary-rgb), 0.35);
+  }
+</style>

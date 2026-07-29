@@ -1,0 +1,340 @@
+---
+// src/components/Hero.astro
+---
+
+<section id="hero" class="hero-section">
+  <!-- Subtle repeating brand background grid -->
+  <div class="bg-grid-overlay" aria-hidden="true"></div>
+
+  <div class="container hero-container">
+    
+    <!-- Photo Column (shows on the right on desktop, on top on mobile) -->
+    <div class="photo-column slide-up-animation" style="animation-delay: 800ms;">
+      <div class="photo-glow-wrapper">
+        <div class="photo-glow" aria-hidden="true"></div>
+        <!-- Uses the brand photo frame class from global.css -->
+        <div class="hero-photo-frame">
+          <!-- This image MUST be placed at: public/images/hero-photo.jpg — Astro serves everything inside /public/ from the root URL path automatically -->
+          <img 
+            src="/images/hero-photo.jpg" 
+            alt="Muhammad Ghufran — AI Automation & Systems Builder" 
+            width="480" 
+            height="480"
+            loading="eager"
+          />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Content Column (shows on the left on desktop, below photo on mobile) -->
+    <div class="content-column">
+      <span class="hero-eyebrow slide-up-animation" style="animation-delay: 100ms;">
+        Systems Builder & AI Automation
+      </span>
+      
+      <h1 class="hero-headline slide-up-animation" style="animation-delay: 250ms;">
+        I build <span class="text-gradient">automated systems</span> — from AI workflows to faceless YouTube channels.
+      </h1>
+      
+      <p class="hero-subline slide-up-animation" style="animation-delay: 450ms;">
+        I design n8n automation workflows, build and scale faceless YouTube channels, and create AI-powered tools — combining no-code speed with real engineering thinking.
+      </p>
+      
+      <!-- Horizontal row of skills pills -->
+      <div class="hero-badges slide-up-animation" style="animation-delay: 600ms;">
+        <span class="pill">
+          <!-- Workflow / Node Gear Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pill-icon" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83 2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          AI Automation
+        </span>
+        
+        <span class="pill">
+          <!-- Connection / Branch Nodes Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pill-icon" aria-hidden="true">
+            <line x1="6" y1="3" x2="6" y2="15"></line>
+            <circle cx="18" cy="6" r="3"></circle>
+            <circle cx="6" cy="18" r="3"></circle>
+            <path d="M18 9a9 9 0 0 1-9 9"></path>
+          </svg>
+          n8n Developer
+        </span>
+        
+        <span class="pill">
+          <!-- Video Play Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pill-icon" aria-hidden="true">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Faceless YouTube Systems
+        </span>
+      </div>
+      
+      <!-- CTA Button Row -->
+      <div class="hero-actions slide-up-animation" style="animation-delay: 700ms;">
+        <a href="#projects" class="btn btn-primary" aria-label="View Muhammad Ghufran's projects">
+          View My Work
+        </a>
+        <a href="#contact" class="btn btn-ghost" aria-label="Contact Muhammad Ghufran to discuss a project">
+          Let's Work Together
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</section>
+
+<style>
+  /* --- 1. Hero Structural Layout & Premium Lighting Background --- */
+  .hero-section {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: var(--space-16) 0; /* Expanded padding for large sizes */
+    overflow: hidden;
+    /* Soft multi-layered radial lighting glows to prevent flat solid background block */
+    background: radial-gradient(circle at 80% 50%, rgba(var(--color-secondary-rgb), 0.08) 0%, transparent 55%),
+                radial-gradient(circle at 20% 30%, rgba(var(--color-primary-rgb), 0.12) 0%, transparent 50%);
+  }
+
+  .hero-container {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr; /* Rebalanced split: 55% text / 45% photo */
+    gap: var(--space-12);
+    align-items: center;
+  }
+
+  /* --- 2. Image Column and float/glow styling --- */
+  .photo-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    order: 2; /* Shows on the right on desktop */
+  }
+
+  .photo-glow-wrapper {
+    position: relative;
+    display: inline-block;
+    /* Gentle floating loop animation */
+    animation: gentleFloat 5s ease-in-out infinite;
+  }
+
+  /* Expanded behind-the-photo gold glow with slow opacity pulsing animation */
+  .photo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(var(--color-secondary-rgb), 0.22) 0%, transparent 70%);
+    border-radius: var(--radius-full);
+    filter: blur(28px);
+    z-index: -1;
+    pointer-events: none;
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+
+  /* Override internal image specs for precise hero scaling */
+  .hero-photo-frame img {
+    max-width: 100%;
+    width: 480px; /* Increased from 400px to make photo a co-equal visual anchor */
+    height: 480px;
+    object-fit: cover;
+  }
+
+  /* --- 3. Text & Info Column --- */
+  .content-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    order: 1; /* Shows on the left on desktop */
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-2);
+  }
+
+  .hero-headline {
+    /* Slightly reduced font-size to fit in 3-4 lines and clean up visual density */
+    font-size: clamp(2.25rem, 4.2vw, 3.125rem); /* Caps at 50px instead of 64px */
+    color: var(--color-heading);
+    margin-bottom: var(--space-4);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-subline {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--lh-base);
+    max-width: 62ch;
+    margin-bottom: var(--space-6);
+  }
+
+  /* --- 4. Badges & Pills Section --- */
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+  }
+
+  .hero-badges .pill {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    transition: transform var(--transition-fast), filter var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .hero-badges .pill:hover {
+    transform: scale(1.04) translateY(-1px);
+    filter: brightness(1.08);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pill-icon {
+    margin-right: var(--space-2);
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+  }
+
+  /* --- 5. Action Buttons (Increased weight and custom hover glows) --- */
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+  }
+
+  .hero-actions .btn-primary {
+    box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.35);
+  }
+
+  .hero-actions .btn-primary:hover {
+    box-shadow: var(--shadow-glow), 0 6px 20px rgba(var(--color-secondary-rgb), 0.35);
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  .hero-actions .btn-ghost {
+    border-width: 2px;
+  }
+
+  .hero-actions .btn-ghost:hover {
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  /* --- 6. Animations (Staggered slide-in triggers) --- */
+  .slide-up-animation {
+    opacity: 0;
+    transform: translateY(20px);
+    /* Explicit duration and easing to avoid CSS variables parsing mismatch on shorthand animation */
+    animation: slideUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes slideUpIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gentleFloat {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% {
+      opacity: 0.85;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.06);
+    }
+  }
+
+  /* --- 7. Responsive Mobile Adaptations (Mobile First) --- */
+  @media (max-width: 768px) {
+    .hero-section {
+      min-height: auto;
+      padding: var(--space-6) 0 var(--space-12);
+    }
+
+    .hero-container {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+      text-align: center;
+    }
+
+    .photo-column {
+      order: 1; /* Shows on top on mobile */
+      margin-bottom: var(--space-4);
+    }
+
+    .hero-photo-frame img {
+      width: 340px; /* Increased from 280px to feel like a proper hero anchor on mobile */
+      height: 340px;
+      max-width: 85vw;
+    }
+
+    .content-column {
+      order: 2;
+      align-items: center;
+    }
+
+    .hero-subline {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-badges {
+      justify-content: center;
+      gap: var(--space-2);
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .hero-actions .btn {
+      width: 100%;
+    }
+  }
+
+  /* --- 8. Accessibility Reduced Motion Overrides --- */
+  @media (prefers-reduced-motion: reduce) {
+    .slide-up-animation {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+    .photo-glow-wrapper {
+      animation: none;
+    }
+    .photo-glow {
+      animation: none;
+    }
+  }
+</style>

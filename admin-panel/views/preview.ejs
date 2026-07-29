@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview: <%= post.title %> | CMS Admin</title>
+  
+  <!-- Loads the actual live global stylesheet served from the Astro workspace -->
+  <link rel="stylesheet" href="/css/global.css">
+  
+  <style>
+    /* Preview Controller Toolbar */
+    .preview-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background-color: #1a202c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10000;
+      border-bottom: 1px solid #2d3748;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-title-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status-badge {
+      background-color: var(--color-secondary, #D9A441);
+      color: #1a202c;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .preview-btn {
+      background-color: #2d3748;
+      color: #fff;
+      border: 1px solid #4a5568;
+      border-radius: 4px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.15s ease-in-out;
+    }
+
+    .preview-btn:hover {
+      background-color: #4a5568;
+    }
+
+    /* Wrap the Astro site layout elements to preview accurately */
+    .preview-body-wrapper {
+      padding-top: 50px; /* offset for preview bar */
+      background-color: var(--color-bg-base);
+      color: var(--color-text-secondary);
+      min-height: 100vh;
+      font-family: var(--font-body);
+      transition: background-color var(--transition-base), color var(--transition-base);
+    }
+
+    /* Mock public blog layout */
+    .blog-post-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-12) var(--space-4);
+    }
+
+    .post-meta-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-4);
+    }
+
+    .post-title {
+      font-size: var(--text-2xl);
+      color: var(--color-heading);
+      margin-bottom: var(--space-4);
+      line-height: var(--lh-tight);
+      font-weight: var(--weight-bold);
+    }
+
+    .post-cover-image {
+      width: 100%;
+      height: 380px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: var(--space-8);
+      border: 1px solid var(--color-border);
+    }
+
+    .post-cover-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* TipTap content rendering overrides inside post body */
+    .post-content {
+      font-size: var(--text-base);
+      line-height: var(--lh-base);
+      color: var(--color-text-secondary);
+    }
+
+    .post-content h2, .post-content h3 {
+      color: var(--color-heading);
+      font-weight: var(--weight-bold);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-3);
+      line-height: var(--lh-tight);
+    }
+
+    .post-content h2 { font-size: var(--text-lg); }
+    .post-content h3 { font-size: var(--text-md); }
+
+    .post-content p {
+      margin-bottom: var(--space-4);
+    }
+
+    .post-content ul, .post-content ol {
+      margin-left: var(--space-6);
+      margin-bottom: var(--space-4);
+    }
+
+    .post-content li {
+      margin-bottom: var(--space-2);
+    }
+
+    .post-content blockquote {
+      border-left: 4px solid var(--color-secondary);
+      padding-left: var(--space-4);
+      margin: var(--space-6) 0;
+      font-style: italic;
+      color: var(--color-text-primary);
+    }
+
+    .post-content pre {
+      background-color: var(--color-bg-surface);
+      border: 1px solid var(--color-border);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin: var(--space-4) 0;
+    }
+
+    .post-content code {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+      color: var(--color-secondary);
+      background-color: var(--color-bg-surface);
+      padding: 0.1em 0.3em;
+      border-radius: var(--radius-sm);
+    }
+
+    .post-content pre code {
+      background-color: transparent;
+      padding: 0;
+      color: var(--color-text-primary);
+    }
+
+    .post-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+      margin: var(--space-6) 0;
+      border: 1px solid var(--color-border);
+    }
+
+    .post-content a {
+      color: var(--color-secondary);
+      font-weight: var(--weight-semibold);
+      text-decoration: none;
+    }
+
+    .post-content a:hover {
+      color: var(--color-secondary-hover);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Preview Controller Bar -->
+<div class="preview-bar">
+  <div class="preview-title-badge">
+    <span>Live Preview Mode</span>
+    <span class="status-badge"><%= post.status %></span>
+  </div>
+  <div class="preview-actions">
+    <button class="preview-btn" onclick="toggleTheme()">Toggle Light/Dark Theme</button>
+    <a href="/posts/edit/<%= post.id %>" class="preview-btn">Back to Editor</a>
+  </div>
+</div>
+
+<!-- Preview Site Container -->
+<div class="preview-body-wrapper">
+  
+  <article class="blog-post-wrapper">
+    <!-- Meta row -->
+    <div class="post-meta-row">
+      <span class="badge" style="background-color: var(--color-secondary); color: var(--color-btn-secondary-text);"><%= post.category || 'General' %></span>
+      <span>•</span>
+      <span><%= post.read_time %> Min Read</span>
+      <span>•</span>
+      <span><%= new Date(post.updated_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) %></span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="post-title"><%= post.title %></h1>
+
+    <!-- Cover Image -->
+    <% if (post.cover_image) { %>
+      <div class="post-cover-image">
+        <img src="<%= post.cover_image %>" alt="Cover Banner">
+      </div>
+    <% } %>
+
+    <!-- Content rendered from rich editor -->
+    <div class="post-content">
+      <%- post.content %>
+    </div>
+  </article>
+
+</div>
+
+<script>
+  // Simple toggle between light and dark themes
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+  }
+
+  // Retrieve initial user storage preference if available
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
+  }
+</script>
+
+</body>
+</html>
