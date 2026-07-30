@@ -1,62 +1,56 @@
-# Implementation Walkthrough: Portfolio Email Management System
+# Mailbox Upgrades & Feature Completion Walkthrough
 
-This walkthrough details the visual, backend, database, and API features implemented for Phase 6 (Contacts & Address Book) and Phase 7 (Email Settings & Identity Management).
-
----
-
-## 1. Phase 6: Contacts & Address Book Summary
-
-* **Database Schema:** Created the SQLite `contacts` table (id, name, email, additional_emails, company, job_title, phone, notes, favorite, avatar_initials).
-* **Middle List Pane:** Displays initials avatars (gold star color for favorites, indigo for others), full name, primary email address, and company labels.
-* **Right Details Profile Inspector:** Displays avatar initials, Name, Company, Job Title, Favorite Toggle Star, Phone, Notes. Includes buttons:
-  * **Send Email:** Opens the compose modal pre-populated with the recipient address.
-  * **Edit Card:** Swaps the viewer pane into an input form.
-  * **Delete:** Permanently discards the contact.
-* **Recipient Autocomplete suggestion panels:** Dynamically fetches matches from `/admin/api/contacts/autocomplete` as the user types in To, Cc, or Bcc inputs, supporting keyboard arrow key navigation and Enter selection.
+This walkthrough details the visual, functional, and performance enhancements introduced to transform the email workspace into a production-grade mail client.
 
 ---
 
-## 2. Phase 7: Email Settings & Identity Management Summary
+## 1. Modern Mailbox Workspace UI
 
-* **Database Schemas:**
-  * `email_preferences` (page sizing, preview length bounds, splits visibility, shortcut triggers, auto-save timers).
-  * `email_identities` (identity labels, display name, sender email, reply-to routing, signature enabled flag, and rich HTML signature bodies).
-* **Preferences Panel Form:** Allows configuring preview lengths, page sizing, autosave draft intervals, default reply behaviors, and keyboard shortcut settings.
-* **Identity Manager:** Supports storing multiple sender identity profiles, displaying default flags, and setting the default identity.
-* **Rich HTML Signature Editor:** Includes a text input field for HTML signature content, a live visual HTML rendering preview panel, and a signature enable toggle.
-* **Compose Integration:**
-  * Appends the active default signature to the rich text editor during composition startup.
-  * Adjusts draft autosaving intervals based on saved user settings.
-  * Validates identity configurations before saving.
+* **Color Palette & Fonts:** Integrated Google Font `Plus Jakarta Sans` for clean, high-contrast typography, styled alongside standard Navy and Gold CMS values.
+* **Initials Avatars:** Automatically maps sender names to a circular avatar with a stable background color based on name string hashing.
+* **Paperclip Attachment Icons:** Added visual badges to identify emails containing attachments directly in Column 2.
+* **Subtle Seen States:** Unread messages are styled in bold with a distinct left accent line, alongside unread count badges next to sidebar folder links.
+* **Shimmer Skeletons:** Implemented shimmer-effect loading skeletons when fetching message bodies over AJAX.
+* **SVG Empty States:** Custom vector illustrations display when no items are active.
 
 ---
 
-## 3. API Contract Layer Verification
+## 2. Complete Email Reading & Caching
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| **GET** | `/admin/api/contacts` | Fetch list of address book contacts | Active |
-| **GET** | `/admin/api/contacts/autocomplete` | Suggest contact names/emails on prefix query | Active |
-| **GET** | `/admin/api/contacts/:id` | Fetch specific contact details | Active |
-| **POST** | `/admin/api/contacts` | Save new contact card details | Active |
-| **PUT** | `/admin/api/contacts/:id` | Update contact card details | Active |
-| **DELETE** | `/admin/api/contacts/:id` | Delete contact card | Active |
-| **PATCH** | `/admin/api/contacts/:id/favorite` | Toggle favorite star status | Active |
-| **GET** | `/admin/api/email/preferences` | Load user settings & options parameters | Active |
-| **PUT** | `/admin/api/email/preferences` | Save user settings & options parameters | Active |
-| **GET** | `/admin/api/email/identities` | List sender identity profiles | Active |
-| **GET** | `/admin/api/email/identities/:id` | Fetch specific identity parameters | Active |
-| **POST** | `/admin/api/email/identities` | Create new identity profile | Active |
-| **PUT** | `/admin/api/email/identities/:id` | Update identity profile & signature | Active |
-| **DELETE** | `/admin/api/email/identities/:id` | Discard identity profile | Active |
-| **PATCH** | `/admin/api/email/identities/:id/default` | Toggle default sender profile identity | Active |
+* **Header Details:** Renders Subject, Sender, Recipients (To, Cc, Bcc), Date, and Reply-To (if distinct from the sender address).
+* **Sandboxed Rendering:** Loads HTML bodies inside an isolated iframe, with inline images and fallback plain-text rendering.
+* **Detail Caching:** Implemented `messageDetailsCache` in `ImapService.js` to store full email details in memory, bypassing redundant network lookups when toggling mail selections.
 
 ---
 
-## 4. Verification Check
-Verified server-side compilation and endpoint registrations:
-```bash
-node server.js
-# output: CMS Admin Panel running on: http://localhost:3001
-```
-All route handlers compile cleanly and all database connection actions execute successfully.
+## 3. Rich Composition, Autocomplete & Drafts
+
+* **SMTP Send Integration:** Compiles form data and stages files to dispatch SMTP.
+* **Quoted Replies:** Reply and Reply All automatically extract sender and recipient addresses, prepend `Re:`, and format quoted blocks.
+* **Forwarding Headers:** Forward parses the date, subject, and body to structure standard forwarded messages.
+* **Address Book Suggestions:** The autocomplete suggestion dropdown queries `/admin/api/contacts/autocomplete` in the background with keyboard Arrow and Enter selector hooks.
+
+---
+
+## 4. Drag & Drop Attachment Staging
+
+* **Drop-zone:** Stages files dragged over the composer card.
+* **Upload Progress Indicator:** Staged items display name, size formatting, and an upload progress loading micro-animation.
+
+---
+
+## 5. Advanced Search Prefix Queries
+
+* Parses prefix keys in the search input (e.g. `from:john subject:invoice`) and maps them to nested IMAP search commands on the Stalwart server.
+
+---
+
+## 6. Keyboard shortcuts System
+
+* Gmail/Superhuman shortcut bindings:
+  * `J`/`K` to move selection down/up
+  * `Enter` to open selection
+  * `C` to Compose, `R` to Reply, `A` to Reply All, `F` to Forward
+  * `E` to Archive, `#`/`Del` to Delete, `S` to Star
+  * `?` to toggle shortcuts cheatsheet modal
+* Checked: Shortcuts do not fire when typing inside inputs, textareas, or contenteditable editors.

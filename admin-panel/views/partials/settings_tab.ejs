@@ -1,0 +1,320 @@
+<!-- admin-panel/views/partials/settings_tab.ejs -->
+<div id="pref-tab-view" style="display: flex; flex-direction: column; padding: 24px; gap: 16px; overflow-y: auto; height: 100%;">
+  <h2 style="font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">General Preferences</h2>
+  
+  <form id="preferences-form" style="display: flex; flex-direction: column; gap: 14px;" onsubmit="savePreferencesForm(event)">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div>
+        <label class="contact-form-label" style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Snippet Preview Length (chars)</label>
+        <input type="number" id="pref-preview-length" class="composer-input" style="border:1px solid var(--border-color); padding:8px 12px; border-radius:6px; background:#FCFDFE;" value="<%= preferences ? preferences.preview_length : 80 %>" min="20" max="200" required>
+      </div>
+      <div>
+        <label class="contact-form-label" style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Messages Page Size</label>
+        <input type="number" id="pref-page-size" class="composer-input" style="border:1px solid var(--border-color); padding:8px 12px; border-radius:6px; background:#FCFDFE;" value="<%= preferences ? preferences.page_size : 15 %>" min="5" max="50" required>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div>
+        <label class="contact-form-label" style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Draft Autosave Interval (sec)</label>
+        <input type="number" id="pref-autosave" class="composer-input" style="border:1px solid var(--border-color); padding:8px 12px; border-radius:6px; background:#FCFDFE;" value="<%= preferences ? preferences.autosave_interval : 30 %>" min="5" max="300" required>
+      </div>
+      <div>
+        <label class="contact-form-label" style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Default Reply Action</label>
+        <select id="pref-reply-behavior" class="composer-input" style="border:1px solid var(--border-color); padding:8px 12px; border-radius:6px; background:#FCFDFE; cursor:pointer;">
+          <option value="reply" <%= preferences && preferences.default_reply_behavior === 'reply' ? 'selected' : '' %>>Reply to Sender</option>
+          <option value="reply_all" <%= preferences && preferences.default_reply_behavior === 'reply_all' ? 'selected' : '' %>>Reply All</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="pref-shortcuts" <%= preferences && preferences.shortcuts_enabled ? 'checked' : '' %> style="width:16px; height:16px; cursor:pointer;">
+        <label for="pref-shortcuts" style="font-size:13px; color:var(--text-main); cursor:pointer;">Enable Keyboard Shortcuts</label>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="pref-reading-pane" <%= preferences && preferences.reading_pane_visible ? 'checked' : '' %> style="width:16px; height:16px; cursor:pointer;">
+        <label for="pref-reading-pane" style="font-size:13px; color:var(--text-main); cursor:pointer;">Show Reading Preview Pane</label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-solid-navy" id="pref-save-btn" style="width: 100%; padding: 10px; margin-top: 10px;">Save General Preferences</button>
+  </form>
+</div>
+
+<div id="ident-tab-view" style="display: none; flex-direction: column; padding: 24px; gap: 16px; overflow-y: auto; height: 100%;">
+  <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+    <h2 style="font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0;">Sender Profiles</h2>
+    <button class="btn btn-outline" onclick="openIdentityForm()" style="padding: 4px 10px; font-size: 11px;">+ New Profile</button>
+  </div>
+
+  <!-- Profiles list -->
+  <div id="identities-list-box" style="display:flex; flex-direction:column; gap:8px;"></div>
+
+  <!-- Profile edit form -->
+  <div id="identity-form-wrapper" style="display:none; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; background-color: #FAFBFD; flex-direction:column; gap:12px;">
+    <h3 id="ident-form-title" style="font-size:13px; font-weight:700; color:var(--text-main); margin:0;">Create Profile</h3>
+    <form id="identity-edit-form" onsubmit="saveIdentityForm(event)">
+      <input type="hidden" id="ident-id">
+      
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:10px;">
+        <div>
+          <label style="display:block; font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Profile Name *</label>
+          <input type="text" id="ident-name" class="composer-input" style="border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; background:#FFF;" required placeholder="e.g. Personal, Work">
+        </div>
+        <div>
+          <label style="display:block; font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Display Name *</label>
+          <input type="text" id="ident-display" class="composer-input" style="border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; background:#FFF;" required placeholder="e.g. Muhammad Ghufran">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:10px;">
+        <div>
+          <label style="display:block; font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Sender Email *</label>
+          <input type="email" id="ident-email" class="composer-input" style="border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; background:#FFF;" required placeholder="e.g. contact@ghufran.net">
+        </div>
+        <div>
+          <label style="display:block; font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Reply-To Address</label>
+          <input type="email" id="ident-replyto" class="composer-input" style="border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; background:#FFF;" placeholder="Optional">
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="ident-sig-enabled" onchange="toggleSigPreview(this.checked)" style="cursor:pointer; width:15px; height:15px;">
+        <label for="ident-sig-enabled" style="font-size:12px; color:var(--text-main); cursor:pointer;">Enable Email Signature</label>
+      </div>
+
+      <div id="identity-sig-row" style="display:none; flex-direction:column; gap:8px; margin-bottom:10px;">
+        <div>
+          <label style="display:block; font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Signature (HTML/Text)</label>
+          <textarea id="ident-sig-html" class="composer-input" style="border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; background:#FFF; height:80px; resize:vertical;" placeholder="HTML formatting allowed" oninput="updateSignatureLivePreview(this.value)"></textarea>
+        </div>
+        <div>
+          <span style="display:block; font-size:10px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Live Preview</span>
+          <div id="identity-sig-preview" style="border: 1px dashed var(--border-color); padding: 8px; font-size:12px; background:#FFF; border-radius:4px; min-height:40px;"></div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" class="btn btn-outline" style="padding:6px 12px; font-size:11px;" onclick="closeIdentityForm()">Cancel</button>
+        <button type="submit" class="btn btn-solid-navy" id="ident-save-btn" style="padding:6px 12px; font-size:11px;">Save Profile</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // --- PREFERENCES FORM ACTIONS ---
+  async function savePreferencesForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById('pref-save-btn');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    const payload = {
+      preview_length: parseInt(document.getElementById('pref-preview-length').value, 10),
+      page_size: parseInt(document.getElementById('pref-page-size').value, 10),
+      autosave_interval: parseInt(document.getElementById('pref-autosave').value, 10),
+      default_reply_behavior: document.getElementById('pref-reply-behavior').value,
+      shortcuts_enabled: document.getElementById('pref-shortcuts').checked ? 1 : 0,
+      reading_pane_visible: document.getElementById('pref-reading-pane').checked ? 1 : 0
+    };
+
+    try {
+      const response = await fetch('/admin/api/email/preferences', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': document.getElementById('csrf-token-val').value
+        },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (result.success) {
+        showToast('Preferences updated successfully.');
+        setTimeout(triggerReload, 500);
+      } else {
+        showToast('Failed to save preferences: ' + result.message, true);
+        btn.textContent = 'Save General Preferences';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      showToast('Network error saving preferences.', true);
+      btn.textContent = 'Save General Preferences';
+      btn.disabled = false;
+    }
+  }
+
+  // --- SENDER PROFILE IDENTITY ACTIONS ---
+  async function loadIdentitiesList() {
+    const container = document.getElementById('identities-list-box');
+    container.innerHTML = '<span style="font-size:12px; color:var(--text-muted);">Loading sender profiles...</span>';
+    
+    try {
+      const response = await fetch('/admin/api/email/identities');
+      const result = await response.json();
+      
+      if (result.success && Array.isArray(result.data)) {
+        container.innerHTML = '';
+        if (result.data.length === 0) {
+          container.innerHTML = '<span style="font-size:12px; color:var(--text-muted);">No profiles defined. Click "+ New Profile" to create one.</span>';
+          return;
+        }
+
+        result.data.forEach(item => {
+          const card = document.createElement('div');
+          card.style.cssText = 'border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; display: flex; justify-content: space-between; align-items: center; background:#FFF;';
+          card.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:2px; font-size:12px;">
+              <div style="font-weight:700; display:flex; align-items:center; gap:8px;">
+                ${item.name} 
+                ${item.is_default ? '<span style="font-size:9px; background:#D1FAE5; color:#065F46; padding:1px 6px; border-radius:10px;">Default</span>' : ''}
+              </div>
+              <div style="color:var(--text-secondary);">${item.display_name} &lt;${item.email}&gt;</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              ${!item.is_default ? `<button class="btn btn-outline" style="padding:4px 8px; font-size:10px;" onclick="setDefaultIdentityProfile('${item.id}')">Set Default</button>` : ''}
+              <button class="btn btn-outline" style="padding:4px 8px; font-size:10px;" onclick="editIdentityProfile('${item.id}')">Edit</button>
+              ${!item.is_default ? `<button class="btn btn-danger-outline" style="padding:4px 8px; font-size:10px;" onclick="deleteIdentityProfile('${item.id}')">Delete</button>` : ''}
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+    } catch (err) {
+      container.innerHTML = '<span style="font-size:12px; color:var(--danger-color);">Error fetching identities.</span>';
+    }
+  }
+
+  function openIdentityForm(profile = null) {
+    document.getElementById('identity-form-wrapper').style.display = 'flex';
+    document.getElementById('identities-list-box').style.display = 'none';
+
+    document.getElementById('ident-id').value = profile ? profile.id : '';
+    document.getElementById('ident-name').value = profile ? profile.name : '';
+    document.getElementById('ident-display').value = profile ? profile.display_name : '';
+    document.getElementById('ident-email').value = profile ? profile.email : '';
+    document.getElementById('ident-replyto').value = profile ? profile.reply_to || '' : '';
+    
+    const sigEnabled = profile ? (profile.signature_enabled === 1) : false;
+    document.getElementById('ident-sig-enabled').checked = sigEnabled;
+    document.getElementById('ident-sig-html').value = profile ? profile.signature_html || '' : '';
+    document.getElementById('identity-sig-preview').innerHTML = profile ? profile.signature_html || '' : '';
+    
+    toggleSigPreview(sigEnabled);
+    document.getElementById('ident-form-title').textContent = profile ? 'Edit Profile' : 'Create Profile';
+    document.getElementById('ident-name').focus();
+  }
+
+  function closeIdentityForm() {
+    document.getElementById('identity-form-wrapper').style.display = 'none';
+    document.getElementById('identities-list-box').style.display = 'flex';
+    loadIdentitiesList();
+  }
+
+  function toggleSigPreview(enabled) {
+    const row = document.getElementById('identity-sig-row');
+    row.style.display = enabled ? 'flex' : 'none';
+  }
+
+  function updateSignatureLivePreview(val) {
+    document.getElementById('identity-sig-preview').innerHTML = val;
+  }
+
+  async function saveIdentityForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById('ident-save-btn');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    const id = document.getElementById('ident-id').value;
+    const payload = {
+      name: document.getElementById('ident-name').value,
+      display_name: document.getElementById('ident-display').value,
+      email: document.getElementById('ident-email').value,
+      reply_to: document.getElementById('ident-replyto').value,
+      signature_enabled: document.getElementById('ident-sig-enabled').checked ? 1 : 0,
+      signature_html: document.getElementById('ident-sig-html').value
+    };
+
+    const url = id ? `/admin/api/email/identities/${id}` : '/admin/api/email/identities';
+    const method = id ? 'PUT' : 'POST';
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': document.getElementById('csrf-token-val').value
+        },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (result.success) {
+        showToast('Sender profile updated successfully.');
+        closeIdentityForm();
+      } else {
+        showToast('Failed to save profile: ' + result.message, true);
+        btn.textContent = 'Save Profile';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      showToast('Network error saving profile.', true);
+      btn.textContent = 'Save Profile';
+      btn.disabled = false;
+    }
+  }
+
+  async function setDefaultIdentityProfile(id) {
+    try {
+      const response = await fetch(`/admin/api/email/identities/${id}/default`, {
+        method: 'PATCH',
+        headers: {
+          'x-csrf-token': document.getElementById('csrf-token-val').value
+        }
+      });
+      const result = await response.json();
+      if (result.success) {
+        showToast('Default profile updated.');
+        loadIdentitiesList();
+      }
+    } catch (err) {
+      showToast('Network error setting default profile.', true);
+    }
+  }
+
+  async function editIdentityProfile(id) {
+    try {
+      const response = await fetch(`/admin/api/email/identities/${id}`);
+      const result = await response.json();
+      if (result.success) {
+        openIdentityForm(result.data);
+      }
+    } catch (err) {
+      showToast('Failed to fetch profile details.', true);
+    }
+  }
+
+  async function deleteIdentityProfile(id) {
+    if (confirm('Are you sure you want to delete this sender profile?')) {
+      try {
+        const response = await fetch(`/admin/api/email/identities/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'x-csrf-token': document.getElementById('csrf-token-val').value
+          }
+        });
+        const result = await response.json();
+        if (result.success) {
+          showToast('Profile deleted successfully.');
+          loadIdentitiesList();
+        } else {
+          showToast('Failed to delete profile: ' + result.message, true);
+        }
+      } catch (err) {
+        showToast('Network error deleting profile.', true);
+      }
+    }
+  }
+</script>

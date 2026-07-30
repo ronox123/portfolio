@@ -409,20 +409,20 @@ export const emailController = {
   // POST /admin/api/email/bulk
   async apiBulkAction(req, res) {
     try {
-      const { folder, uids, action } = req.body;
+      const { folder, uids, action, destination } = req.body;
       const draftUids = uids.filter(uid => typeof uid === 'string' && uid.startsWith('draft_'));
       const imapUids = uids.filter(uid => !isNaN(parseInt(uid, 10))).map(uid => parseInt(uid, 10));
-
+ 
       if (draftUids.length > 0 && action === 'delete') {
         draftUids.forEach(uid => {
           DraftService.delete(parseInt(uid.replace('draft_', ''), 10));
         });
       }
-
+ 
       if (imapUids.length > 0) {
-        await mailService.bulkAction(folder, imapUids, action);
+        await mailService.bulkAction(folder, imapUids, action, destination);
       }
-
+ 
       sendApiResponse(res, true, 200, null, `Bulk action "${action}" completed successfully.`);
     } catch (err) {
       sendApiResponse(res, false, 500, null, getFriendlyErrorMessage(err));

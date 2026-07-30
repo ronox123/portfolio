@@ -60,22 +60,22 @@ export const apiValidators = {
   // Validate Bulk mail actions inputs
   validateBulk(req, res, next) {
     const { folder, uids, action } = req.body;
-    const validActions = ['read', 'unread', 'delete', 'archive'];
-
+    const validActions = ['read', 'unread', 'delete', 'archive', 'star', 'unstar', 'move'];
+ 
     if (!folder || folder.trim() === '') {
       return res.status(400).json({
         success: false,
         message: 'Validation Error: "folder" parameter is mandatory.'
       });
     }
-
+ 
     if (!uids || !Array.isArray(uids) || uids.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'Validation Error: "uids" array is mandatory and must not be empty.'
       });
     }
-
+ 
     if (!action || !validActions.includes(action)) {
       return res.status(400).json({
         success: false,

@@ -1,66 +1,90 @@
-# Production Implementation Plan: Integrated Portfolio Email Management System
+# Implementation Plan: Premium Mailbox Redesign & Feature Completion
 
-This document outlines the detailed strategy and engineering standards to transform the Portfolio CMS into a self-hosted communication platform for the domain **ghufran.net**.
-
----
-
-## Technical Architecture & Engineering Standards
-
-### 1. Clean Modular Architecture
-We partition the email system into distinct layers:
-- **Routes:** Route declarations (`routes/email.js`) which handle HTTP endpoints and validation middlewares, with zero business logic.
-- **Controllers:** Controller handlers (`controllers/emailController.js`) parsing requests, calling services, and returning JSON or rendering EJS views.
-- **Services:** Service classes (`services/mailService.js`) encapsulating the core logic (SMTP, IMAP, drafts SQLite storage, attachment streaming).
-- **Configuration:** Stored in environment variables (`.env`) loaded via `dotenv`.
-- **Middleware:** Security validations (Helmet, Rate-Limiting, CSRF, Session protection, Multer upload filters).
-- **Views & Components:** Modular EJS files in `views/` separating sections (sidebar, topbar, compose modal, message pane).
-
-### 2. Email Storage Strategy
-- **Mail Server as Source of Truth:** The self-hosted Stalwart Mail Server holds the actual emails. No emails are duplicated or synchronized into the SQLite database.
-- **SQLite Database:** Used strictly for metadata of local draft emails (`draft_emails` table), local user interface preferences (`email_preferences` table), sender identity profiles (`email_identities` table), and contacts address book entries (`contacts` table).
+We will transform the existing basic mailbox template into a high-fidelity, premium mail client workspace. All modifications will preserve the existing underlying connection configuration.
 
 ---
 
-## Complete Multi-Phase Implementation Strategy
+## User Review Required
 
-### Phase 1: Backend Foundation & Event Emitters
-- Refactor routes, controllers, and services in Express.
-- Setup folder/service structure and decoupled Event driven notification layer.
-- Verify Helmets, Rate Limit, and Authentication middlewares.
+> [!IMPORTANT]
+> **Keyboard Shortcuts:** We will register Vim/Gmail-like keyboard navigation:
+> * `J` / `K` to navigate up/down the list
+> * `C` to Compose
+> * `R` to Reply, `A` to Reply All, `F` to Forward
+> * `E` to Archive, `#` to Delete, `U` to toggle Read/Unread
+> * `S` to toggle Star
 
-### Phase 2: Connection Pooling & TLS/STARTTLS
-- Complete environment variable bindings for Stalwart servers.
-- Setup SMTP connection pooling and automatic 15-second idle-disconnect IMAP socket caching.
+---
 
-### Phase 2.5: REST API Contract
-- Mount secure, standard API JSON envelope controller endpoints under `/admin/api/`.
+## Open Questions
 
-### Phase 4: Inbox UI & Split-Pane Viewer
-- Implement three-pane premium inbox dashboard layout.
-- Integrate sandboxed HTML readers with auto-height adjustment.
+None. The technical specifications cover all requested items.
 
-### Phase 5: Floating Compose Window
-- Build compose modal supporting file attachment dropzone selectors.
-- Implement SQLite-backed autosave and recovery background timers.
+---
 
-### Phase 6: Address Book & Contacts Integration
-- Create SQLite `contacts` schema and ContactService queries.
-- Build list cards panel, profile details inspector, and keyboard-navigable autocomplete suggestion dropdown overlay.
+## Proposed Changes
 
-### Phase 7: Settings & Identity Management
-- Create SQLite schemas for `email_preferences` and `email_identities` tables.
-- Support custom autosave interval, preview length, page sizing, and keyboard shortcut settings.
-- Build rich HTML signature inputs with automatic compose-pane injection.
-- Support multiple identities storage, editing, and default toggling.
+### 1. Backend Service Extensions
+
+#### [MODIFY] [ImapService.js](file:///c:/Users/Amjad%20Enterprises/OneDrive/Desktop/POT/admin-panel/services/email/ImapService.js)
+* Support extracting `replyTo` from message envelope headers.
+* Implement client-side body caching. Cached message bodies will be stored in an in-memory map to avoid repetitive network IMAP commands.
+* Upgrade search query criteria parser to identify filter prefixes (`from:`, `to:`, `subject:`, `body:`) and translate them to IMAP AND/OR filters.
+
+#### [MODIFY] [MailboxService.js](file:///c:/Users/Amjad%20Enterprises/OneDrive/Desktop/POT/admin-panel/services/email/MailboxService.js)
+* Implement unread status counts for folder lists by querying `client.status(folder, { unseen: true })`.
+
+---
+
+### 2. Controller & Routing Adjustments
+
+#### [MODIFY] [emailController.js](file:///c:/Users/Amjad%20Enterprises/OneDrive/Desktop/POT/admin-panel/controllers/emailController.js)
+* Expose API endpoint `GET /admin/api/email/unread-counts` to supply unread counts for all folder nodes.
+* Add endpoints to support Starring/Unstarring emails.
+* Extend the reply and forward actions with header overrides.
+
+#### [MODIFY] [email.js](file:///c:/Users/Amjad%20Enterprises/OneDrive/Desktop/POT/admin-panel/routes/email.js)
+* Register `GET /api/email/unread-counts`.
+* Register `PATCH /api/email/message/:uid/star` and `DELETE /api/email/message/:uid/star`.
+* Register `POST /api/email/message/:uid/move`.
+
+---
+
+### 3. Frontend UI Redesign (`inbox.ejs`)
+
+#### [MODIFY] [inbox.ejs](file:///c:/Users/Amjad%20Enterprises/OneDrive/Desktop/POT/admin-panel/views/inbox.ejs)
+* **Visual Polish:**
+  * Embed Inter/Outfit typography.
+  * Modernize the three-panel layout with sleek borders, curated hover transformations, responsive drawer support, and styled scrollbars.
+  * Introduce shimmer-effect loading skeletons when reading emails.
+  * Add custom SVG empty state illustrations.
+* **Email List Panel:**
+  * Add color-coded initials avatars.
+  * Display a visible star icon toggle on each list item.
+  * Display paperclip attachment badges.
+  * Implement unread indicators and unread sidebar counts.
+  * Support instant in-place AJAX reloading of email rows instead of full page reloads.
+* **Email Viewer Pane:**
+  * Display complete headers (Subject, Date, Sender, Recipients, CC, BCC, Reply-To).
+  * Render the action bar containing Reply, Reply All, Forward, Star, Move Folder, Archive, and Delete.
+* **Compose modal:**
+  * Fix modal loading and inject draft state recoveries.
+  * Integrate drag & drop zones for attachments.
+  * Embed progress loaders during attachment uploads.
+* **Key Navigation:**
+  * Add keyboard listener bindings to navigate through items list and trigger actions.
+  * Add a helper shortcuts cheatsheet modal.
+* **Toast Notification Panel:**
+  * Implement a client-side Toast manager to alert users of errors, SMTP dispatch completions, or connection warnings.
 
 ---
 
 ## Verification Plan
 
-### Automated Checks
-- Start server locally with `node server.js` to verify routes register correctly and database tables initialize without error.
-
 ### Manual Verification
-- **SMTP/IMAP Connectivity:** Execute verification test to ensure Express successfully authenticates with `mail.ghufran.net`.
-- **E2E Delivery:** Send emails to external accounts and inspect header passes (SPF, DKIM, DMARC).
-- **Security Check:** Confirm sandboxed iframe blocks script execution on test emails.
+1. Open the Admin Panel mailbox. Verify the list rendering, avatars, and folder unread badges.
+2. Search using `from:` filter in the search box.
+3. Select an email and confirm the detail view renders subject, recipient, date, body, attachments, and Reply-to details.
+4. Click Reply / Reply All / Forward. Ensure the composer opens with pre-populated fields and quoted text.
+5. Drag and drop a file into the compose window. Verify the progress indicator completes.
+6. Verify keyboard shortcuts work (`j`/`k` select row, `c` opens composer).

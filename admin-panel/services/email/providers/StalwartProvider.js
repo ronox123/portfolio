@@ -56,9 +56,9 @@ export class StalwartProvider extends EmailProvider {
     return await SmtpService.send({ to, cc, bcc, subject, body, attachments });
   }
 
-  // Perform bulk mailbox status actions (Read, Unread, Archive, Delete)
-  async bulkAction(folder, uids, action) {
-    Logger.info('StalwartProvider: bulkAction called', { folder, uidsCount: uids.length, action });
-    return await MailboxService.executeBulkAction(folder, uids, action);
+  // Perform bulk mailbox status actions (Read, Unread, Archive, Delete, Star, Unstar, Move)
+  async bulkAction(folder, uids, action, destination = null) {
+    Logger.info('StalwartProvider: bulkAction called', { folder, uidsCount: uids.length, action, destination });
+    return await MailboxService.executeBulkAction(folder, uids, action, destination);
   }
 }

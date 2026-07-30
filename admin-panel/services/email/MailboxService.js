@@ -10,24 +10,38 @@ export const MailboxService = {
     return await ConnectionManager.withImapClient(async (client) => {
       const folders = await client.list();
       EmailEvents.emit(EmailEventTypes.MAILBOX_SYNCHRONIZED, { count: folders.length });
-      return folders.map(f => ({
-        path: f.path,
-        name: f.name,
-        delimiter: f.delimiter
+      
+      // Query unseen counts in parallel for performance
+      const folderList = await Promise.all(folders.map(async (f) => {
+        let unseen = 0;
+        try {
+          const status = await client.status(f.path, { unseen: true });
+          unseen = status.unseen || 0;
+        } catch (err) {
+          Logger.warn('Failed to retrieve unseen status for folder', { path: f.path, error: err.message });
+        }
+        return {
+          path: f.path,
+          name: f.name,
+          delimiter: f.delimiter,
+          unseen: unseen
+        };
       }));
+
+      return folderList;
     });
   },
 
-  // Perform bulk status changes or relocations (Read, Unread, Archive, Delete)
-  async executeBulkAction(folder, uids, action) {
-    Logger.info('Executing bulk action on IMAP messages', { folder, uidsCount: uids.length, action });
+  // Perform bulk status changes or relocations (Read, Unread, Archive, Delete, Star, Unstar, Move)
+  async executeBulkAction(folder, uids, action, destination = null) {
+    Logger.info('Executing bulk action on IMAP messages', { folder, uidsCount: uids.length, action, destination });
     
     return await ConnectionManager.withImapClient(async (client) => {
       await client.mailboxOpen(folder);
       
       const range = uids.join(',');
       const folders = await client.list();
-
+ 
       if (action === 'delete') {
         const trashFolder = folders.find(f => 
           f.name.toLowerCase().includes('trash') || 
@@ -58,6 +72,19 @@ export const MailboxService = {
         Logger.info('Relocating emails to Archive folder', { range, archiveFolder });
         await client.messageMove(range, archiveFolder, { uid: true });
         EmailEvents.emit(EmailEventTypes.EMAIL_MOVED, { folder, uids, destination: archiveFolder });
+      } else if (action === 'star') {
+        Logger.info('Marking emails as starred (\\Flagged)', { range });
+        await client.messageFlagsAdd(range, ['\\Flagged'], { uid: true });
+      } else if (action === 'unstar') {
+        Logger.info('Marking emails as unstarred (removing \\Flagged)', { range });
+        await client.messageFlagsRemove(range, ['\\Flagged'], { uid: true });
+      } else if (action === 'move') {
+        if (!destination) {
+          throw new Error('Destination folder must be specified for move action.');
+        }
+        Logger.info('Relocating emails to custom folder', { range, destination });
+        await client.messageMove(range, destination, { uid: true });
+        EmailEvents.emit(EmailEventTypes.EMAIL_MOVED, { folder, uids, destination });
       }
       
       return true;
