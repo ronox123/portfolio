@@ -135,6 +135,7 @@
                       <div class="btn-cell">
                         <!-- Toggle Publish -->
                         <form action="/posts/toggle-publish/<%= post.id %>" method="POST" style="display: inline-block;">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                           <button type="submit" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">
                             <%= post.status === 'published' ? 'Unpublish' : 'Publish' %>
                           </button>
@@ -152,6 +153,7 @@
 
                         <!-- Delete -->
                         <form action="/posts/delete/<%= post.id %>" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to permanently delete this post?');">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                           <button type="submit" class="btn btn-danger-outline" style="padding: 6px 12px; font-size: 12px;">
                             Delete
                           </button>

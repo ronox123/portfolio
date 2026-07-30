@@ -1,0 +1,30 @@
+# Email Management System Tasks Checklist
+
+- `[x]` **Phase 1: Backend Foundation & Architecture**
+  - `[x]` Setup folder/service module structure
+  - `[x]` Establish decoupled Event driven notification layer
+  - `[x]` Implement automatic 15-second idle-disconnect IMAP socket caching
+- `[x]` **Phase 2: SMTP, IMAP & Connection Layer**
+  - `[x]` Implement SMTP mail dispatch pooling and timeouts
+  - `[x]` Implement secure TLS / STARTTLS authentication configurations
+  - `[x]` Build command line connection checker script
+- `[x]` **Phase 2.5: API Contract Layer**
+  - `[x]` Mount secure REST API endpoints with CSRF guards
+  - `[x]` Implement input validations and standardized envelopes
+- `[x]` **Phase 4: Inbox UI & Split-Pane Viewer**
+  - `[x]` Create three-pane premium inbox dashboard layout
+  - `[x]` Integrate sandboxed HTML readers with auto-height adjustment
+  - `[x]` Support keyboard Up/Down arrow list navigation
+- `[x]` **Phase 5: Floating Compose Window**
+  - `[x]` Build floating compose card modal
+  - `[x]` Support attachment drag & drop file selectors with progress bars
+  - `[x]` Implement SQLite-backed autosave and recovery background timers
+- `[x]` **Phase 6: Address Book & Contacts Integration**
+  - `[x]` Create SQLite `contacts` schema and ContactService queries
+  - `[x]` Create contacts list card panels and full profile details inspector
+  - `[x]` Build keyboard-navigable autocomplete suggestion dropdown overlay
+- `[x]` **Phase 7: Settings & Identity Management**
+  - `[x]` Create SQLite schemas for `email_preferences` and `email_identities`
+  - `[x]` Support custom autosave interval, preview length, page sizing, and keyboard shortcut settings
+  - `[x]` Build rich HTML signature inputs with automatic compose-pane injection
+  - `[x]` Support multiple identities storage, editing, and default toggling

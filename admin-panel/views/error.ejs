@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Alert | Portfolio CMS</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .error-container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .error-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Red danger bar at top of card */
+    .error-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--danger-color), var(--warning-color));
+    }
+
+    .error-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 24px;
+      background-color: var(--danger-bg);
+      color: var(--danger-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .error-header {
+      margin-bottom: 24px;
+    }
+
+    .error-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .error-message {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .btn-home {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: var(--primary-color);
+      color: #FFFFFF;
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      transition: background-color 0.15s ease-in-out;
+      margin-top: 12px;
+    }
+
+    .btn-home:hover {
+      background-color: var(--primary-hover);
+      color: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+
+<div class="error-container">
+  <div class="error-card">
+    <div class="error-icon">
+      <!-- Shield Alert Icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    </div>
+    
+    <div class="error-header">
+      <h1 class="error-title">Validation Error</h1>
+      <p class="error-message"><%= message %></p>
+    </div>
+
+    <a href="/dashboard" class="btn-home">Return to Dashboard</a>
+  </div>
+</div>
+
+</body>
+</html>

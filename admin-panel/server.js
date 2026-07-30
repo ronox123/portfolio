@@ -8,6 +8,10 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { DatabaseSync } from 'node:sqlite';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+import { csrfInit, csrfVerify } from './middlewares/csrf.js';
+import emailRouter from './routes/email.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +21,30 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Security Middlewares
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https:", "http:"],
+      frameSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'"]
+    }
+  }
+}));
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many requests from this IP, please try again later.'
+});
+app.use(globalLimiter);
 
 // Path Config
 const rootDir = path.resolve(__dirname, '..');
@@ -65,6 +93,79 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS draft_emails (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    recipient_to TEXT,
+    recipient_cc TEXT,
+    recipient_bcc TEXT,
+    subject TEXT,
+    body TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS contacts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    additional_emails TEXT,
+    company TEXT,
+    job_title TEXT,
+    phone TEXT,
+    notes TEXT,
+    favorite INTEGER DEFAULT 0,
+    avatar_initials TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS email_identities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    reply_to TEXT,
+    is_default INTEGER DEFAULT 0,
+    signature_enabled INTEGER DEFAULT 0,
+    signature_text TEXT,
+    signature_html TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS email_preferences (
+    id INTEGER PRIMARY KEY,
+    preview_length INTEGER DEFAULT 80,
+    page_size INTEGER DEFAULT 15,
+    reading_pane_visible INTEGER DEFAULT 1,
+    font_size TEXT DEFAULT '13px',
+    font_family TEXT DEFAULT 'sans-serif',
+    autosave_interval INTEGER DEFAULT 30,
+    default_reply_behavior TEXT DEFAULT 'reply',
+    theme TEXT DEFAULT 'dark',
+    notifications_enabled INTEGER DEFAULT 1,
+    shortcuts_enabled INTEGER DEFAULT 1,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+db.exec(`
+  INSERT OR IGNORE INTO email_preferences (id, preview_length, page_size, reading_pane_visible, font_size, font_family, autosave_interval, default_reply_behavior, theme, notifications_enabled, shortcuts_enabled)
+  VALUES (1, 80, 15, 1, '13px', 'sans-serif', 30, 'reply', 'dark', 1, 1);
+`);
+
+db.exec(`
+  INSERT OR IGNORE INTO email_identities (id, name, display_name, email, reply_to, is_default, signature_enabled, signature_html)
+  VALUES (1, 'Primary Identity', 'Ghufran', 'contact@ghufran.net', 'contact@ghufran.net', 1, 1, '<div style="font-family: sans-serif; font-size: 13px; color: #475569; margin-top: 20px;">--<br><b>Ghufran</b><br>contact@ghufran.net</div>');
+`);
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -76,6 +177,10 @@ app.use(session({
   saveUninitialized: false,
   cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hours
 }));
+
+// CSRF Protection Middlewares
+app.use(csrfInit);
+app.use(csrfVerify);
 
 // Global EJS Variables Middleware
 app.use((req, res, next) => {
@@ -135,6 +240,7 @@ const requireAuth = (req, res, next) => {
 };
 
 // --- ROUTES ---
+app.use('/admin', emailRouter);
 
 // Login Routes
 app.get('/login', (req, res) => {

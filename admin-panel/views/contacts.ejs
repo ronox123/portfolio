@@ -390,6 +390,7 @@
                     </td>
                     <td onclick="event.stopPropagation()">
                       <form action="/admin/contacts/delete/<%= contact.id %>" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this inquiry?');">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <button type="submit" class="btn btn-danger-outline" style="padding: 4px 8px; font-size: 11px;">
                           Delete
                         </button>
@@ -539,7 +540,8 @@
         const response = await fetch('/admin/contacts/update-status', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-csrf-token': '<%= csrfToken %>'
           },
           body: JSON.stringify({ id, status: newStatus })
         });
@@ -609,7 +611,8 @@
         const response = await fetch('/admin/contacts/bulk', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-csrf-token': '<%= csrfToken %>'
           },
           body: JSON.stringify({ ids: selectedIds, action })
         });
