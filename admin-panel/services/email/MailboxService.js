@@ -37,7 +37,9 @@ export const MailboxService = {
     Logger.info('Executing bulk action on IMAP messages', { folder, uidsCount: uids.length, action, destination });
     
     return await ConnectionManager.withImapClient(async (client) => {
-      await ConnectionManager.openMailboxSafely(client, folder);
+      const list = await client.list();
+      const realFolder = ConnectionManager.mapSystemFolderToImap(folder, list);
+      await ConnectionManager.openMailboxSafely(client, realFolder);
       
       const range = uids.join(',');
       const folders = await client.list();

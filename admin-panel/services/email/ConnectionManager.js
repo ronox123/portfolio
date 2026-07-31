@@ -187,5 +187,51 @@ export const ConnectionManager = {
     } catch (err) {
       Logger.warn(`Failed to verify/create mailbox "${folder}"`, { error: err.message });
     }
+  },
+
+  // Map system folders to actual IMAP folder names
+  mapSystemFolderToImap(folderName, foldersList) {
+    if (!foldersList || foldersList.length === 0) return folderName;
+    const name = folderName.toLowerCase();
+    
+    if (name === 'inbox') return 'INBOX';
+    
+    if (name === 'sent') {
+      const found = foldersList.find(f => 
+        f.name.toLowerCase() === 'sent' || 
+        f.name.toLowerCase() === 'sent items' || 
+        f.name.toLowerCase() === 'sent messages'
+      );
+      return found ? found.path : 'Sent';
+    }
+    
+    if (name === 'drafts' || name === 'draft') {
+      const found = foldersList.find(f => 
+        f.name.toLowerCase() === 'drafts' || 
+        f.name.toLowerCase() === 'draft'
+      );
+      return found ? found.path : 'Drafts';
+    }
+    
+    if (name === 'trash' || name === 'deleted') {
+      const found = foldersList.find(f => 
+        f.name.toLowerCase() === 'trash' || 
+        f.name.toLowerCase() === 'deleted items' || 
+        f.name.toLowerCase() === 'deleted' ||
+        f.name.toLowerCase() === 'bin'
+      );
+      return found ? found.path : 'Trash';
+    }
+    
+    if (name === 'spam' || name === 'junk') {
+      const found = foldersList.find(f => 
+        f.name.toLowerCase() === 'spam' || 
+        f.name.toLowerCase() === 'junk mail' || 
+        f.name.toLowerCase() === 'junk'
+      );
+      return found ? found.path : 'Junk';
+    }
+    
+    return folderName;
   }
 };

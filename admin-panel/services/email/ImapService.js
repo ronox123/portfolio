@@ -79,7 +79,9 @@ export const ImapService = {
     Logger.info('Fetching headers from IMAP server', { folder, page, limit, search: searchQuery });
     
     return await ConnectionManager.withImapClient(async (client) => {
-      const mailbox = await ConnectionManager.openMailboxSafely(client, folder, { readOnly: true });
+      const list = await client.list();
+      const realFolder = ConnectionManager.mapSystemFolderToImap(folder, list);
+      const mailbox = await ConnectionManager.openMailboxSafely(client, realFolder, { readOnly: true });
       const totalEmails = mailbox.exists;
  
       if (totalEmails === 0) {
@@ -228,7 +230,9 @@ export const ImapService = {
     Logger.info('Fetching full email message', { folder, uid });
     
     const messageData = await ConnectionManager.withImapClient(async (client) => {
-      await ConnectionManager.openMailboxSafely(client, folder);
+      const list = await client.list();
+      const realFolder = ConnectionManager.mapSystemFolderToImap(folder, list);
+      await ConnectionManager.openMailboxSafely(client, realFolder);
       
       const msg = await client.fetchOne(uid.toString(), { source: true, bodyStructure: true }, { uid: true });
       if (!msg) {
@@ -313,7 +317,9 @@ export const ImapService = {
     // Fallback: fetch directly from IMAP
     Logger.warn('Attachment not found in cached attachments list, falling back to IMAP bodyPart fetch', { folder, uid, partId });
     const fallbackData = await ConnectionManager.withImapClient(async (client) => {
-      await ConnectionManager.openMailboxSafely(client, folder);
+      const list = await client.list();
+      const realFolder = ConnectionManager.mapSystemFolderToImap(folder, list);
+      await ConnectionManager.openMailboxSafely(client, realFolder);
       const msg = await client.fetchOne(uid.toString(), { bodyParts: [partId] }, { uid: true });
       if (!msg || !msg.bodyParts || !msg.bodyParts.has(partId)) {
         throw new Error('Attachment part not found.');
