@@ -3,10 +3,37 @@ export const prerender = false; // Disable static rendering for this API route
 
 import { DatabaseSync } from 'node:sqlite';
 import path from 'path';
+import fs from 'fs';
 import nodemailer from 'nodemailer';
 
-// Simple in-memory tracker to prevent duplicate submissions on retries
+// Simple in-memory tracker to prevent duplicate submissions on retries (within 2 minutes)
 const recentSubmissions = new Map();
+
+// Parse .env manually to ensure environment variables are populated under PM2/npx preview
+try {
+  const envPath = path.join(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    envContent.split(/\r?\n/).forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) return;
+      const index = trimmed.indexOf('=');
+      if (index !== -1) {
+        const key = trimmed.substring(0, index).trim();
+        let val = trimmed.substring(index + 1).trim();
+        // Remove surrounding quotes if present
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.substring(1, val.length - 1);
+        }
+        if (key && !process.env[key]) {
+          process.env[key] = val;
+        }
+      }
+    });
+  }
+} catch (envErr) {
+  console.error('Failed to parse .env file manually:', envErr);
+}
 
 export async function POST({ request }) {
   try {
@@ -128,6 +155,9 @@ export async function POST({ request }) {
       auth: {
         user: process.env.EMAIL_USER || 'contact@ghufran.net',
         pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
       }
     };
 
