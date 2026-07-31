@@ -8,7 +8,7 @@ export const AttachmentService = {
     Logger.info('Retrieving structural email attachment stream', { folder, uid, partId });
     
     return await ConnectionManager.withImapClient(async (client) => {
-      await client.mailboxOpen(folder);
+      await ConnectionManager.openMailboxSafely(client, folder);
       
       const msg = await client.fetchOne(uid.toString(), { bodyParts: [partId] }, { uid: true });
       if (!msg || !msg.bodyParts || !msg.bodyParts.has(partId)) {

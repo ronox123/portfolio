@@ -154,5 +154,38 @@ export const ConnectionManager = {
 
     Logger.info('Diagnostic verification tests complete', diagnostics);
     return diagnostics;
+  },
+
+  // Open a mailbox safely, creating it dynamically if missing
+  async openMailboxSafely(client, folder, options = {}) {
+    try {
+      return await client.mailboxOpen(folder, options);
+    } catch (err) {
+      if (err.serverResponseCode === 'NONEXISTENT' || err.message.includes('NONEXISTENT') || err.message.includes('exist')) {
+        Logger.warn(`Mailbox "${folder}" does not exist, creating it programmatically...`);
+        try {
+          await client.mailboxCreate(folder);
+          return await client.mailboxOpen(folder, options);
+        } catch (createErr) {
+          Logger.error(`Failed to create mailbox "${folder}"`, { error: createErr.message });
+          throw err;
+        }
+      }
+      throw err;
+    }
+  },
+
+  // Ensure a mailbox exists, creating it dynamically if it does not
+  async ensureMailboxExists(client, folder) {
+    try {
+      const list = await client.list();
+      const exists = list.some(f => f.path === folder || f.name === folder);
+      if (!exists) {
+        Logger.info(`Mailbox "${folder}" does not exist, creating it programmatically.`);
+        await client.mailboxCreate(folder);
+      }
+    } catch (err) {
+      Logger.warn(`Failed to verify/create mailbox "${folder}"`, { error: err.message });
+    }
   }
 };

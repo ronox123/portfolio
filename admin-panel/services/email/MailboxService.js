@@ -37,7 +37,7 @@ export const MailboxService = {
     Logger.info('Executing bulk action on IMAP messages', { folder, uidsCount: uids.length, action, destination });
     
     return await ConnectionManager.withImapClient(async (client) => {
-      await client.mailboxOpen(folder);
+      await ConnectionManager.openMailboxSafely(client, folder);
       
       const range = uids.join(',');
       const folders = await client.list();
@@ -54,6 +54,7 @@ export const MailboxService = {
           await client.mailboxExpunge();
         } else {
           Logger.info('Moving emails to Trash folder', { range, trashFolder });
+          await ConnectionManager.ensureMailboxExists(client, trashFolder);
           await client.messageMove(range, trashFolder, { uid: true });
         }
         EmailEvents.emit(EmailEventTypes.EMAIL_DELETED, { folder, uids });
@@ -70,6 +71,7 @@ export const MailboxService = {
           f.name.toLowerCase().includes('archive')
         )?.path || 'Archive';
         Logger.info('Relocating emails to Archive folder', { range, archiveFolder });
+        await ConnectionManager.ensureMailboxExists(client, archiveFolder);
         await client.messageMove(range, archiveFolder, { uid: true });
         EmailEvents.emit(EmailEventTypes.EMAIL_MOVED, { folder, uids, destination: archiveFolder });
       } else if (action === 'star') {
@@ -83,6 +85,7 @@ export const MailboxService = {
           throw new Error('Destination folder must be specified for move action.');
         }
         Logger.info('Relocating emails to custom folder', { range, destination });
+        await ConnectionManager.ensureMailboxExists(client, destination);
         await client.messageMove(range, destination, { uid: true });
         EmailEvents.emit(EmailEventTypes.EMAIL_MOVED, { folder, uids, destination });
       }
