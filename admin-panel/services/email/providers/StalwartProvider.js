@@ -47,7 +47,7 @@ export class StalwartProvider extends EmailProvider {
   // Stream an attachment component
   async getAttachmentStream(folder, uid, partId) {
     Logger.info('StalwartProvider: getAttachmentStream called', { folder, uid, partId });
-    return await AttachmentService.getStream(folder, uid, partId);
+    return await ImapService.getAttachment(folder, uid, partId);
   }
 
   // Dispatch outgoing email message

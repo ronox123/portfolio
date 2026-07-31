@@ -44,6 +44,27 @@ export function findAttachmentParts(structure, parentPartId = '') {
   return parts;
 }
 
+// Clean raw boundary characters and MIME headers from body excerpt previews
+function cleanExcerpt(rawText) {
+  if (!rawText) return '';
+  let clean = rawText;
+  
+  // 1. Strip MIME boundaries (e.g., --00000000000029c9840657dceafa)
+  clean = clean.replace(/--[a-zA-Z0-9_=\-\.\/\"\'\:\+\?]+/g, '');
+  
+  // 2. Strip common MIME headers inside raw text body parts
+  clean = clean.replace(/(Content-Type|Content-Transfer-Encoding|Content-Disposition|charset|boundary|format|Content-ID|Content-Description|spiders|dmarc|spf)[^\r\n]*/gi, '');
+  
+  // 3. Strip HTML tags
+  clean = clean.replace(/<[^>]*>/g, ' ');
+  
+  // 4. Clean up whitespaces & newlines
+  clean = clean.replace(/[\r\n\t]+/g, ' ');
+  clean = clean.replace(/\s+/g, ' ');
+  
+  return clean.trim().substring(0, 120);
+}
+
 // In-memory cache for parsed email message details
 const messageDetailsCache = new Map();
 
@@ -162,12 +183,7 @@ export const ImapService = {
         if (msg.bodyParts) {
           const bodyBuffer = msg.bodyParts.get('text') || msg.bodyParts.get('1');
           if (bodyBuffer) {
-            excerpt = bodyBuffer.toString('utf-8')
-              .replace(/<[^>]*>/g, ' ') // Strip HTML tags
-              .replace(/[\r\n\t]+/g, ' ')
-              .replace(/\s+/g, ' ')
-              .trim()
-              .substring(0, 100);
+            excerpt = cleanExcerpt(bodyBuffer.toString('utf-8'));
           }
         }
 
@@ -214,7 +230,7 @@ export const ImapService = {
     const messageData = await ConnectionManager.withImapClient(async (client) => {
       await client.mailboxOpen(folder);
       
-      const msg = await client.fetchOne(uid.toString(), { source: true }, { uid: true });
+      const msg = await client.fetchOne(uid.toString(), { source: true, bodyStructure: true }, { uid: true });
       if (!msg) {
         throw new Error('Email message not found.');
       }
@@ -225,8 +241,33 @@ export const ImapService = {
       });
  
       const parsed = await simpleParser(msg.source);
-      const attachmentParts = findAttachmentParts(msg.bodyStructure);
- 
+      
+      let htmlBody = parsed.html || `<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;color:#1E293B;white-space:pre-wrap;">${parsed.text || ''}</div>`;
+      
+      const attachments = [];
+      if (parsed.attachments && Array.isArray(parsed.attachments)) {
+        parsed.attachments.forEach((att, idx) => {
+          const partId = idx.toString();
+          attachments.push({
+            partId,
+            filename: att.filename || `attachment-${partId}`,
+            mimeType: att.contentType,
+            size: att.size,
+            cid: att.cid,
+            content: att.content // Buffer content
+          });
+
+          // Replace inline images cids with base64 URIs
+          if (att.cid && htmlBody) {
+            const base64Data = att.content.toString('base64');
+            const dataUrl = `data:${att.contentType};base64,${base64Data}`;
+            const escapedCid = att.cid.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const cidRegex = new RegExp(`cid:${escapedCid}`, 'g');
+            htmlBody = htmlBody.replace(cidRegex, dataUrl);
+          }
+        });
+      }
+
       return {
         uid: uid,
         subject: parsed.subject || '(No Subject)',
@@ -238,14 +279,52 @@ export const ImapService = {
         bcc: parsed.bcc ? parsed.bcc.text : '',
         replyTo: parsed.replyTo ? parsed.replyTo.text : '',
         date: parsed.date || new Date(),
-        html: parsed.html || `<p>${parsed.textAsHtml || parsed.text || ''}</p>`,
+        html: htmlBody,
         text: parsed.text || '',
-        attachments: attachmentParts
+        attachments: attachments
       };
     });
 
     // Cache the message detail object
     messageDetailsCache.set(cacheKey, messageData);
     return messageData;
+  },
+
+  // Retrieve an attachment by UID and partId
+  async getAttachment(folder, uid, partId) {
+    const cacheKey = `${folder}_${uid}`;
+    let messageData = messageDetailsCache.get(cacheKey);
+    if (!messageData) {
+      Logger.info('Attachment message details not in cache, fetching message first', { cacheKey });
+      messageData = await this.fetchMessage(folder, uid);
+    }
+    
+    if (messageData && messageData.attachments) {
+      const att = messageData.attachments.find(a => a.partId === partId);
+      if (att) {
+        return {
+          filename: att.filename,
+          mimeType: att.mimeType,
+          content: att.content
+        };
+      }
+    }
+
+    // Fallback: fetch directly from IMAP
+    Logger.warn('Attachment not found in cached attachments list, falling back to IMAP bodyPart fetch', { folder, uid, partId });
+    const fallbackData = await ConnectionManager.withImapClient(async (client) => {
+      await client.mailboxOpen(folder);
+      const msg = await client.fetchOne(uid.toString(), { bodyParts: [partId] }, { uid: true });
+      if (!msg || !msg.bodyParts || !msg.bodyParts.has(partId)) {
+        throw new Error('Attachment part not found.');
+      }
+      return {
+        filename: `attachment-${partId}`,
+        mimeType: 'application/octet-stream',
+        content: msg.bodyParts.get(partId)
+      };
+    });
+
+    return fallbackData;
   }
 };

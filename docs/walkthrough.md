@@ -1,56 +1,29 @@
-# Mailbox Upgrades & Feature Completion Walkthrough
+# Mailbox Upgrades & Robustness Walkthrough
 
-This walkthrough details the visual, functional, and performance enhancements introduced to transform the email workspace into a production-grade mail client.
-
----
-
-## 1. Modern Mailbox Workspace UI
-
-* **Color Palette & Fonts:** Integrated Google Font `Plus Jakarta Sans` for clean, high-contrast typography, styled alongside standard Navy and Gold CMS values.
-* **Initials Avatars:** Automatically maps sender names to a circular avatar with a stable background color based on name string hashing.
-* **Paperclip Attachment Icons:** Added visual badges to identify emails containing attachments directly in Column 2.
-* **Subtle Seen States:** Unread messages are styled in bold with a distinct left accent line, alongside unread count badges next to sidebar folder links.
-* **Shimmer Skeletons:** Implemented shimmer-effect loading skeletons when fetching message bodies over AJAX.
-* **SVG Empty States:** Custom vector illustrations display when no items are active.
+This walkthrough details the fixes and features completed to ensure a production-grade mail client experience.
 
 ---
 
-## 2. Complete Email Reading & Caching
-
-* **Header Details:** Renders Subject, Sender, Recipients (To, Cc, Bcc), Date, and Reply-To (if distinct from the sender address).
-* **Sandboxed Rendering:** Loads HTML bodies inside an isolated iframe, with inline images and fallback plain-text rendering.
-* **Detail Caching:** Implemented `messageDetailsCache` in `ImapService.js` to store full email details in memory, bypassing redundant network lookups when toggling mail selections.
+## 1. Clean Preview Snippets & MIME Decoders
+* **MIME Excerpts Parser:** Added a custom regex cleaner `cleanExcerpt` in [ImapService.js](file:///c:/Users/Amjad%20Enterprises/OneDrive/Desktop/POT/admin-panel/services/email/ImapService.js) that strips raw boundary hashes (e.g. `--00000000000029c9840657dceafa...`) and headers. It extracts clean, readable text snippets (first 100–120 characters) for folder summaries.
 
 ---
 
-## 3. Rich Composition, Autocomplete & Drafts
-
-* **SMTP Send Integration:** Compiles form data and stages files to dispatch SMTP.
-* **Quoted Replies:** Reply and Reply All automatically extract sender and recipient addresses, prepend `Re:`, and format quoted blocks.
-* **Forwarding Headers:** Forward parses the date, subject, and body to structure standard forwarded messages.
-* **Address Book Suggestions:** The autocomplete suggestion dropdown queries `/admin/api/contacts/autocomplete` in the background with keyboard Arrow and Enter selector hooks.
+## 2. Dynamic HTML Body Rendering & Sandboxed Iframes
+* **Direct innerHTML Binding:** Replaced the previous `srcdoc` template literal string interpolation with programmatically loaded `doc.getElementById('html-content-container').innerHTML = rawHtml` inside the `iframe.onload` event. This prevents client-side syntax crashes if email content contains backtick (\`) formatting characters.
+* **Secure DOM Scripts Filter:** The iframe container strips script elements programmatically, safeguarding the client from script exploits.
 
 ---
 
-## 4. Drag & Drop Attachment Staging
-
-* **Drop-zone:** Stages files dragged over the composer card.
-* **Upload Progress Indicator:** Staged items display name, size formatting, and an upload progress loading micro-animation.
+## 3. Secure EJS Configuration Injections
+* **JSON Scripts Parsing:** EJS configurations (`folder`, `autosave_interval`, `default_signature_html`, etc.) are now safely output inside a `<script type="application/json">` block. JavaScript parses this block dynamically, avoiding string quote-break syntax errors if signatures or names contain quotes, backticks, or slashes.
 
 ---
 
-## 5. Advanced Search Prefix Queries
-
-* Parses prefix keys in the search input (e.g. `from:john subject:invoice`) and maps them to nested IMAP search commands on the Stalwart server.
+## 4. Universal Inline Images Rendering
+* **Base64 CID Encoder:** Parses all attachments in `fetchMessage`. If an attachment has a `cid` (content identifier) tag matching a reference in the HTML body, it automatically encodes the binary buffer as a base64 Data URL (`data:image/...;base64,...`) and replaces it in the iframe HTML. This loads all inline mail graphics instantly offline.
 
 ---
 
-## 6. Keyboard shortcuts System
-
-* Gmail/Superhuman shortcut bindings:
-  * `J`/`K` to move selection down/up
-  * `Enter` to open selection
-  * `C` to Compose, `R` to Reply, `A` to Reply All, `F` to Forward
-  * `E` to Archive, `#`/`Del` to Delete, `S` to Star
-  * `?` to toggle shortcuts cheatsheet modal
-* Checked: Shortcuts do not fire when typing inside inputs, textareas, or contenteditable editors.
+## 5. Efficient Buffered Downloads
+* **Cached Attachment Streams:** Integrated in-memory attachment caching. The attachment download endpoints retrieve the binary buffer directly from `messageDetailsCache` memory rather than querying the IMAP socket repeatedly, which improves performance.

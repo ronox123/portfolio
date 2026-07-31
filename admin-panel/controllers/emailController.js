@@ -138,11 +138,11 @@ export const emailController = {
     try {
       const { uid, partId } = req.params;
       const folder = req.query.folder || 'INBOX';
-      const filename = req.query.filename || 'attachment';
 
-      const stream = await mailService.getAttachmentStream(folder, parseInt(uid, 10), partId);
-      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
-      stream.pipe(res);
+      const attachment = await mailService.getAttachmentStream(folder, parseInt(uid, 10), partId);
+      res.setHeader('Content-Type', attachment.mimeType || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(attachment.filename)}"`);
+      res.send(attachment.content);
     } catch (err) {
       res.status(500).send(getFriendlyErrorMessage(err));
     }
@@ -285,11 +285,11 @@ export const emailController = {
     try {
       const { uid, partId } = req.params;
       const folder = req.query.folder || 'INBOX';
-      const filename = req.query.filename || 'attachment';
 
-      const stream = await mailService.getAttachmentStream(folder, parseInt(uid, 10), partId);
-      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
-      stream.pipe(res);
+      const attachment = await mailService.getAttachmentStream(folder, parseInt(uid, 10), partId);
+      res.setHeader('Content-Type', attachment.mimeType || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(attachment.filename)}"`);
+      res.send(attachment.content);
     } catch (err) {
       sendApiResponse(res, false, 500, null, getFriendlyErrorMessage(err));
     }
