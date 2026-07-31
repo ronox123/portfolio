@@ -1321,14 +1321,15 @@
 
     // --- VIEW EMAIL CLIENT-SIDE FETCH & DETAILS PREVIEW ---
     async function viewEmail(uid) {
-      if (uid.startsWith('draft_')) {
+      const uidStr = String(uid);
+      if (uidStr.startsWith('draft_')) {
         try {
-          const response = await fetch(`/admin/api/email/message/${uid}`);
+          const response = await fetch(`/admin/api/email/message/${uidStr}`);
           const result = await response.json();
           if (result.success) {
             const draft = result.data;
             openCompose({
-              id: uid.replace('draft_', ''),
+              id: uidStr.replace('draft_', ''),
               to: draft.to,
               cc: draft.cc,
               bcc: draft.bcc,
@@ -1348,14 +1349,14 @@
       const rows = document.querySelectorAll('.email-item-row');
       rows.forEach((row, index) => {
         row.classList.remove('active-row');
-        if (row.getAttribute('data-uid') === uid) {
+        if (row.getAttribute('data-uid') === uidStr) {
           row.classList.add('active-row');
           row.classList.remove('unread');
           activeRowIndex = index;
         }
       });
 
-      activeEmailUid = uid;
+      activeEmailUid = uidStr;
       document.getElementById('email-view-empty').style.display = 'none';
       
       const contentPane = document.getElementById('email-view-content');
@@ -1376,7 +1377,7 @@
       `;
 
       try {
-        const response = await fetch(`/admin/api/email/message/${uid}?folder=${activeFolder}`);
+        const response = await fetch(`/admin/api/email/message/${uidStr}?folder=${activeFolder}`);
         const result = await response.json();
         
         if (result.success) {
@@ -1428,7 +1429,7 @@
             </div>
 
             <div class="email-view-body-wrapper">
-              <iframe id="email-body-iframe" class="email-body-iframe" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
+              <iframe id="email-body-iframe" class="email-body-iframe" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin"></iframe>
             </div>
 
             <div class="email-view-attachments" id="view-attachments-box" style="display: none;">
